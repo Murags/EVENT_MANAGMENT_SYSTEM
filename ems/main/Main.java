@@ -1,36 +1,41 @@
 package ems.main;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import ems.Controller.OrganizerController;
 import ems.db.DBConnection; // Import the DBConnection class if it's in a different package
+import ems.Models.Organizer;
 
+/**
+ * The Main class is the entry point of the application.
+ */
 public class Main {
+    /**
+     * The main method is the entry point of the application.
+     *
+     * @param args Command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
-        Connection con = null;
+        // Create a map to store the employee data
+        Map<String, String> organizerData = new HashMap<>();
 
-        try {
-            // Create an instance of DBConnection
-            DBConnection dbConnection = new DBConnection();
+        // Add the organizer data to the map
+        organizerData.put("FirstName", "John");
+        organizerData.put("LastName", "John");
+        organizerData.put("Email", "John@example.com");
+        organizerData.put("Password", "root");
+        organizerData.put("gender", "M");
+        organizerData.put("phone", "0708626805");
 
-            // Retrieve the Connection object
-            con = dbConnection.getConnection();
+        // Create a new Organizer object with the provided data
+        OrganizerController.createOrganizer(organizerData);
 
-        } catch (ClassNotFoundException | SQLException e) {
-            // Handle ClassNotFoundException and SQLException separately
-            System.out.println("Error connecting to the database:");
-            e.printStackTrace();
-        } finally {
-            // Close the connection in the finally block to ensure it's always closed
-            try {
-                if (con != null && !con.isClosed()) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                // Log or handle the SQLException
-                System.out.println("Error closing connection:");
-                e.printStackTrace();
-            }
-        }
+        // Retrieve the Organizer object from the database based on the email
+        Organizer organizer = OrganizerController.getOrganizer("John@example.com");
+        System.out.println(organizer);
     }
 }
