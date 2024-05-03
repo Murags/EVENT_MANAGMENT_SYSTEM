@@ -6,9 +6,9 @@ import java.util.Map;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import ems.Controller.OrganizerController;
+import ems.Controller.CustomerController;
 import ems.db.DBConnection; // Import the DBConnection class if it's in a different package
-import ems.Models.Organizer;
+import ems.Models.Customer;
 
 /**
  * The Main class is the entry point of the application.
@@ -21,21 +21,34 @@ public class Main {
      */
     public static void main(String[] args) {
         // Create a map to store the employee data
-        Map<String, String> organizerData = new HashMap<>();
+        Connection con = null;
+        HashMap<String, String> customerData = new HashMap<>();
+        try{
 
-        // Add the organizer data to the map
-        organizerData.put("FirstName", "John");
-        organizerData.put("LastName", "John");
-        organizerData.put("Email", "John@example.com");
-        organizerData.put("Password", "root");
-        organizerData.put("gender", "M");
-        organizerData.put("phone", "0708626805");
+            DBConnection dbConnection = new DBConnection();
+            //Add customer to the database
+            customerData.put("CustomerName","Jhon");
+            customerData.put("TelephoneNumber","7973545454");
+            customerData.put("EmailAddress","jhondoes@gmail.com");
+            customerData.put("Password", "jhondoe123");
 
-        // Create a new Organizer object with the provided data
-        OrganizerController.createOrganizer(organizerData);
+            con = dbConnection.getConnection();
+            CustomerController.createCustomer(customerData);
 
-        // Retrieve the Organizer object from the database based on the email
-        Organizer organizer = OrganizerController.getOrganizer("John@example.com");
-        System.out.println(organizer);
+
+        }catch(ClassNotFoundException | SQLException e){
+            e.printStackTrace();
+        }finally{
+            try{
+                if(con != null && !con.isClosed()){
+                    con.close();
+                }
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        // Retrieve the Customer object from the database based on the email
+        Customer customer = CustomerController.getCustomer("jhondoes@gmail.com");
+        System.out.println(customer);
     }
 }
