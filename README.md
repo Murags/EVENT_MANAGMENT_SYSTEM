@@ -1,2 +1,2 @@
-# EVENT_MANAGMENT_SYSYSTEMTEM
+# EVENT_MANAGEMENT_SYSTEM
 We can do this guys lets go
