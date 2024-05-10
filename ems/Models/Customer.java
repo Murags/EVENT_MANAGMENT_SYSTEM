@@ -77,7 +77,7 @@ public class Customer {
    }
 
    public static Customer fetchByEmail(String email){
-
+        
         Customer customer = null;
         
 
@@ -86,8 +86,10 @@ public class Customer {
             Connection con = db.getConnection();
  
             PreparedStatement pst = con.prepareStatement("SELECT * FROM customers WHERE email=?");
+            
+            pst.setString(1, email);
             ResultSet rs = pst.executeQuery();
-
+            
             if(rs.next()){
                 customer = new Customer(rs.getString("name"), 
                 rs.getString("telephoneNumber"), 
