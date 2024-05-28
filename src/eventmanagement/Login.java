@@ -59,7 +59,7 @@ public class Login extends JFrame implements ActionListener
         LoginNow = new JButton();
         LoginNow.setBorder(new EtchedBorder());
         LoginNow.setText("Login Now");
-        LoginNow.setBackground(new Color(91, 99, 183));
+        LoginNow.setBackground(new Color(43, 41, 57));
         LoginNow.setForeground(Color.white);
         LoginNow.setFont(new Font("Helvetica",Font.BOLD,12));
         LoginNow.setFocusable(false);
@@ -76,7 +76,7 @@ public class Login extends JFrame implements ActionListener
 
         Left = new JPanel();
         Left.setPreferredSize(new Dimension(450,650));
-        Left.setBackground(new Color(203, 204, 255));
+        Left.setBackground(new Color(221, 218, 238));
         Left.setLayout(null);
         Left.add(Login);
         Left.add(UserName);
