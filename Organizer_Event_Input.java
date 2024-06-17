@@ -1,17 +1,17 @@
-package com.mycompany.organizerhomepage;
+// package com.mycompany.organizerhomepage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
 public class Organizer_Event_Input extends javax.swing.JFrame {
-  
-    
+
+
     public Organizer_Event_Input() {
         initComponents();
     }
 
-    
+
     @SuppressWarnings("unchecked")
     private void initComponents() {
 
@@ -36,11 +36,11 @@ public class Organizer_Event_Input extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(51, 51, 51));
 
-        jLabel1.setFont(new java.awt.Font("Gloucester MT Extra Condensed", 1, 24)); 
+        jLabel1.setFont(new java.awt.Font("Gloucester MT Extra Condensed", 1, 24));
         jLabel1.setForeground(new java.awt.Color(204, 204, 204));
         jLabel1.setText("INPUT EVENT DETAILS");
 
-        jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14)); 
+        jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Event Name");
 
@@ -52,15 +52,15 @@ public class Organizer_Event_Input extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14)); 
+        jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14));
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Event Date");
 
-        jLabel4.setFont(new java.awt.Font("SansSerif", 0, 14)); 
+        jLabel4.setFont(new java.awt.Font("SansSerif", 0, 14));
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("KSH");
 
-        jLabel5.setFont(new java.awt.Font("SansSerif", 0, 14)); 
+        jLabel5.setFont(new java.awt.Font("SansSerif", 0, 14));
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Price");
 
@@ -74,7 +74,7 @@ public class Organizer_Event_Input extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setFont(new java.awt.Font("SansSerif", 0, 14)); 
+        jLabel6.setFont(new java.awt.Font("SansSerif", 0, 14));
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Description");
 
@@ -85,7 +85,7 @@ public class Organizer_Event_Input extends javax.swing.JFrame {
         jScrollPane1.setViewportView(Event_Description);
 
         Save.setBackground(new java.awt.Color(51, 51, 51));
-        Save.setFont(new java.awt.Font("QuickType Mono", 1, 14)); 
+        Save.setFont(new java.awt.Font("QuickType Mono", 1, 14));
         Save.setForeground(new java.awt.Color(204, 204, 204));
         Save.setText("Apply");
         Save.addActionListener(new java.awt.event.ActionListener() {
@@ -94,7 +94,7 @@ public class Organizer_Event_Input extends javax.swing.JFrame {
             }
         });
 
-        jLabel7.setFont(new java.awt.Font("SansSerif", 0, 14)); 
+        jLabel7.setFont(new java.awt.Font("SansSerif", 0, 14));
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Event Time");
 
@@ -223,16 +223,16 @@ public class Organizer_Event_Input extends javax.swing.JFrame {
     private void Price2ActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
-   
+
    public static void main(String args[]) {
-        
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Organizer_Event_Input().setVisible(true);
             }
         });
     }
-    
-        
+
+
 
 }

@@ -6,17 +6,18 @@
     import ems.Models.Customer;
 
     public class CustomerController {
-        public static void createCustomer(HashMap<String, String> data){
+        public static boolean createCustomer(HashMap<String, String> data){
             String firstName = data.get("FirstName");
             String lastName = data.get("LastName");
             String email = data.get("Email");
             String password = data.get("Password");
-            String gender = data.get("gender");
-            String phone = data.get("phone");
+            String gender = data.get("Gender");
+            String phone = data.get("Phone");
 
             Customer customer = new Customer(firstName, lastName, email, password, gender, phone);
 
-            customer.save();
+            boolean success = customer.save();
+            return success;
         }
 
         public static Customer getCustomer(String email){

@@ -86,7 +86,7 @@ public class Customer {
     /**
      * Saves the Customer object to the database.
      */
-    public void save(){
+    public boolean save(){
         try{
             DBConnection db = new DBConnection();
             Connection con = db.getConnection();
@@ -103,8 +103,11 @@ public class Customer {
             db.closeConnection();
             System.out.println("Customer added successfully");
 
+            return true;
+
         }catch(Exception e){
             e.printStackTrace();
+            return false;
         }
     }
 
