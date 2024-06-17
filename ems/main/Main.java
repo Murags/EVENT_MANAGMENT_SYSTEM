@@ -27,15 +27,15 @@ public class Main {
 
             DBConnection dbConnection = new DBConnection();
             //Add customer to the database
-            customerData.put("CustomerName","Jhon");
-            customerData.put("TelephoneNumber","7973545454");
-            customerData.put("EmailAddress","jhondoes@gmail.com");
+            customerData.put("FirstName","Jhon");
+            customerData.put("LastName","Doe");
+            customerData.put("gender", "M");
+            customerData.put("phone","797354544");
+            customerData.put("Email","jhondoes@gmail.com");
             customerData.put("Password", "jhondoe123");
 
             con = dbConnection.getConnection();
             CustomerController.createCustomer(customerData);
-
-
         }catch(ClassNotFoundException | SQLException e){
             e.printStackTrace();
         }finally{
