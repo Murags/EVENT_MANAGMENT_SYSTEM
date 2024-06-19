@@ -1,3 +1,6 @@
+import javax.swing.SwingUtilities;
+
+import ems.views.SignUp;
 
 public class Organizor_Landing_Pge extends javax.swing.JFrame {
 
@@ -96,8 +99,14 @@ public class Organizor_Landing_Pge extends javax.swing.JFrame {
        
     }//GEN-LAST:event_Organizer_specific_eventsActionPerformed
 
-    private void New_EventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_EventActionPerformed
-    }//GEN-LAST:event_New_EventActionPerformed
+    private void New_EventActionPerformed(java.awt.event.ActionEvent evt) {    
+            SwingUtilities.invokeLater(() ->{
+                new Organizor_Landing_Pge().setVisible(false);
+            Organizer_Event_Input Input = new Organizer_Event_Input();
+            Input.setVisible(true);
+           
+        });
+}//GEN-LAST:event_New_EventActionPerformed
 
     /**
      * @param args the command line arguments
