@@ -272,8 +272,34 @@ public class SignUp extends JFrame implements ActionListener {
                     }
                 }
                 else{
-                    // Send to organizer controller
-                    OrganizerController.createOrganizer(userData);
+                    // check if user exists
+                    if (OrganizerController.getOrganizer(email) != null) {
+                        JOptionPane.showMessageDialog(null, "User already exists");
+                        // Close the current SignUp window
+                        this.dispose();
+
+                        // Navigate to Login view
+                        Login loginView = new Login();
+                        loginView.setVisible(true);
+                    }
+                    else{
+                        // Send to user controller
+                        boolean success = OrganizerController.createOrganizer(userData);
+
+                        if (success) {
+                            // Registration successful, navigate to login view or show success message
+                            JOptionPane.showMessageDialog(this, "Registration successful. Please log in.");
+                            // Close the current SignUp window
+                            this.dispose();
+
+                            // Navigate to Login view
+                            Login loginView = new Login();
+                            loginView.setVisible(true);
+                        } else {
+                            // Registration failed, show error message
+                            JOptionPane.showMessageDialog(this, "Registration failed. Please try again.");
+                        }
+                    }
                 }
             }
         }
