@@ -1,13 +1,16 @@
 package ems.Models;
 
+import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import ems.db.DBConnection;
 
+/**
+ * Represents a Customer entity with properties and CRUD operations.
+ */
 public class Customer {
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
@@ -15,7 +18,17 @@ public class Customer {
     private String gender;
     private String phone;
 
-    public Customer(String firstName, String lastName, String email, String password, String gender, String phone){
+    /**
+     * Constructor to initialize a Customer object with provided details.
+     *
+     * @param firstName  the first name of the customer
+     * @param lastName   the last name of the customer
+     * @param email      the email address of the customer
+     * @param password   the password of the customer
+     * @param gender     the gender of the customer
+     * @param phone      the phone number of the customer
+     */
+    public Customer(String firstName, String lastName, String email, String password, String gender, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -25,6 +38,14 @@ public class Customer {
     }
 
     // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -79,20 +100,20 @@ public class Customer {
      * @return a string representation of the Customer object
      */
     @Override
-    public String toString(){
-        return "Customer [" + "firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", gender=" + gender + ", phone=" + phone + "]";
+    public String toString() {
+        return "Customer [" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", gender=" + gender + ", phone=" + phone + "]";
     }
 
     /**
-     * Saves the Customer object to the database.
+     * Saves the Customer object to the database and sets the ID.
      */
-    public boolean save(){
-        try{
+    public boolean save() {
+        try {
             DBConnection db = new DBConnection();
             Connection con = db.getConnection();
 
             String query = "INSERT INTO customers (First_Name, Last_Name, email, password, gender, phone) VALUES(?,?,?,?,?,?)";
-            PreparedStatement ps = con.prepareStatement(query);
+            PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, this.firstName);
             ps.setString(2, this.lastName);
             ps.setString(3, this.email);
@@ -100,28 +121,31 @@ public class Customer {
             ps.setString(5, this.gender);
             ps.setString(6, this.phone);
             ps.executeUpdate();
+
+            // Get the generated ID
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                this.id = rs.getInt(1);
+            }
+
             db.closeConnection();
             System.out.println("Customer added successfully");
-
             return true;
-
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-
     /**
-     * Fetches an Customer object from the database based on the provided email and password.
+     * Fetches a Customer object from the database based on the provided email.
      *
      * @param email the email address of the customer
-     * @param password the password of the customer
      * @return the matched Customer object from the database or null if not found
      */
-    public static Customer fetchByEmail(String email){
+    public static Customer fetchByEmail(String email) {
         Customer customer = null;
-        try{
+        try {
             DBConnection db = new DBConnection();
             Connection con = db.getConnection();
 
@@ -130,7 +154,7 @@ public class Customer {
             ps.setString(1, email);
 
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 customer = new Customer(
                     rs.getString("First_Name"),
                     rs.getString("Last_Name"),
@@ -139,13 +163,13 @@ public class Customer {
                     rs.getString("gender"),
                     rs.getString("phone")
                 );
+                customer.setId(rs.getInt("id")); // Set the ID
             }
             db.closeConnection();
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return customer;
     }
-
 }

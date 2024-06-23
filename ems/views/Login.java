@@ -186,8 +186,8 @@ public class Login extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Login successful!");
                     this.dispose();
                     if(role == "User"){
-                        CustomerController.getCustomer(email);
-                        CustomerView customerView = new CustomerView();
+                        Customer customer = CustomerController.getCustomer(email);
+                        CustomerView customerView = new CustomerView(customer);
                         customerView.setVisible(true);
                     }
                     else{

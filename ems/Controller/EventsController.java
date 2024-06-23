@@ -1,5 +1,7 @@
 package ems.Controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import ems.Models.Event;
 
 public class EventsController {
@@ -14,5 +16,9 @@ public class EventsController {
            return event.delete();
         }
         return false;
+    }
+
+    public static List<Event> allEvents(){
+        return Event.all();
     }
 }

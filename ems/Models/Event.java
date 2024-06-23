@@ -3,6 +3,8 @@ package ems.Models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import ems.db.DBConnection;
 
@@ -174,5 +176,39 @@ public class Event {
             e.printStackTrace();
         }
         return event;
+    }
+
+        /**
+     * Fetches all events
+     *
+     * @return a list of Event objects
+     */
+    public static List<Event> all() {
+        List<Event> events = new ArrayList<>();
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "SELECT * FROM events";
+            PreparedStatement ps = con.prepareStatement(query);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Event event = new Event(
+                    rs.getInt("organizer_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getDouble("price"),
+                    rs.getString("image")
+                );
+                event.setId(rs.getInt("id"));
+                events.add(event);
+            }
+            db.closeConnection();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return events;
     }
 }

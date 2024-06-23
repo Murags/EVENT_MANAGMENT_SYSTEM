@@ -3,14 +3,22 @@ package ems.views;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 import ems.Models.Customer;
+import ems.Models.Event;
+import ems.Controller.BookingsController;
+import ems.Controller.EventsController;
 
 public class CustomerView extends JFrame {
 
+    private Customer customer;
     private JButton homeButton, eventsButton, bookingsButton, profileButton;
 
-    public CustomerView() {
+    public CustomerView(Customer customer) {
+        this.customer = customer;
         // Set up the main frame
         setTitle("Event Management Dashboard");
         setSize(1200, 800);
@@ -116,41 +124,80 @@ public class CustomerView extends JFrame {
         contentArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         contentArea.setBackground(new Color(240, 240, 240));
 
+        List<Event> events = EventsController.allEvents();
         // Add event cards
-        for (int i = 1; i <= 15; i++) {
-            contentArea.add(createEventCard("Event " + i, "Description for event " + i));
+        for (Event event : events) {
+            contentArea.add(createEventCard(event));
         }
 
         return contentArea;
     }
 
-    private JPanel createEventCard(String title, String description) {
-        JPanel card = new JPanel();
-        card.setLayout(new BorderLayout());
-        card.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 2, true));
-        card.setPreferredSize(new Dimension(200, 150));
-        card.setBackground(Color.WHITE);
+    // Method to create event card based on Event object
+    private JPanel createEventCard(Event event) {
+        JPanel eventCard = new JPanel();
+        eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
+        eventCard.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        eventCard.setBackground(Color.WHITE);
 
-        JLabel titleLabel = new JLabel(title);
+        // Image
+        JLabel imageLabel = new JLabel();
+        if (event.getImage() != null) {
+            ImageIcon imageIcon = new ImageIcon(event.getImage());
+            Image image = imageIcon.getImage().getScaledInstance(200, 150, Image.SCALE_DEFAULT);
+            imageIcon = new ImageIcon(image);
+            imageLabel.setIcon(imageIcon);
+        }
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        eventCard.add(imageLabel);
+
+        // Title
+        JLabel titleLabel = new JLabel(event.getTitle());
         titleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
-        titleLabel.setHorizontalAlignment(JLabel.CENTER);
-        card.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+        eventCard.add(titleLabel);
 
-        JTextArea descriptionArea = new JTextArea(description);
+        // Description
+        JTextArea descriptionArea = new JTextArea(event.getDescription());
+        descriptionArea.setEditable(false);
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
-        descriptionArea.setEditable(false);
-        descriptionArea.setBackground(Color.WHITE);
-        descriptionArea.setForeground(new Color(60, 60, 60));
-        card.add(new JScrollPane(descriptionArea), BorderLayout.CENTER);
+        descriptionArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
+        descriptionScrollPane.setPreferredSize(new Dimension(200, 100));
+        eventCard.add(descriptionScrollPane);
 
-        return card;
-    }
+        // Price
+        JLabel priceLabel = new JLabel("Price: $" + event.getPrice());
+        priceLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+        eventCard.add(priceLabel);
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            CustomerView dashboard = new CustomerView();
-            dashboard.setVisible(true);
+        // Book Button
+        JButton bookButton = new JButton("Book");
+        bookButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bookButton.setBackground(new Color(0, 123, 255));
+        bookButton.setForeground(Color.WHITE);
+        bookButton.setFocusPainted(false);
+        bookButton.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+        bookButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        bookButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Implement booking action here
+                boolean success = BookingsController.createBooking(customer.getId(), event.getId());
+                if (success) {
+                    JOptionPane.showMessageDialog(null, "Successfully booked event: " + event.getTitle());
+                } else {
+                    JOptionPane.showMessageDialog(null, "Failed to book event: " + event.getTitle());
+                }
+            }
         });
+        eventCard.add(bookButton);
+
+        return eventCard;
     }
+
 }
