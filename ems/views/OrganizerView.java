@@ -12,8 +12,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import java.util.List;
+
 import ems.Controller.EventsController;
 import ems.Models.Organizer;
+import ems.Models.Event;
 
 public class OrganizerView extends JFrame {
 
@@ -151,9 +154,10 @@ public class OrganizerView extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.setBackground(new Color(240, 240, 240));
 
-        // Add event cards (example content)
-        for (int i = 1; i <= 15; i++) {
-            panel.add(createEventCard("Event " + i, "Description for event " + i));
+        List<Event> events = organizer.getEvents();
+        // Add event cards
+        for (Event event : events) {
+            panel.add(createEventCard(event));
         }
 
         return panel;
@@ -313,6 +317,10 @@ public class OrganizerView extends JFrame {
                     descriptionArea.setText("");
                     priceField.setText("");
                     imageLabel.setText("No file chosen");
+
+                    // Refresh events panel
+                    refreshEventsPanel();
+                    showPanel("Events");
                 } else {
                     JOptionPane.showMessageDialog(null, "Failed to create event.", "Error", JOptionPane.ERROR_MESSAGE);
                     // Optionally reset fields even on failure
@@ -324,7 +332,6 @@ public class OrganizerView extends JFrame {
             }
         });
 
-
         // Wrap the panel in a JScrollPane to make it scrollable
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -333,22 +340,135 @@ public class OrganizerView extends JFrame {
         return panel; // Return the JScrollPane instead of the JPanel
     }
 
-    private JPanel createEventCard(String title, String description) {
+    private void refreshEventsPanel() {
+        JPanel newEventsPanel = createEventsPanel(); // Create a new panel with updated events
+        contentArea.add(new JScrollPane(newEventsPanel), "Events");
+        showPanel("Events");
+    }
+
+    // Method to create event card based on Event object
+    private JPanel createEventCard(Event event) {
         JPanel eventCard = new JPanel();
-        eventCard.setLayout(new BorderLayout());
-        eventCard.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
+        eventCard.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         eventCard.setBackground(Color.WHITE);
+        eventCard.setPreferredSize(new Dimension(250, 390)); // Adjust the size as needed
+        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 390)); // Set max height
 
-        JLabel titleLabel = new JLabel(title);
+        // Image
+        JLabel imageLabel = new JLabel();
+        if (event.getImage() != null) {
+            ImageIcon imageIcon = new ImageIcon(event.getImage());
+            Image image = imageIcon.getImage().getScaledInstance(350, 250, Image.SCALE_DEFAULT);
+            imageIcon = new ImageIcon(image);
+            imageLabel.setIcon(imageIcon);
+        }
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        eventCard.add(imageLabel);
+
+        // Title
+        JLabel titleLabel = new JLabel(event.getTitle());
         titleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
-        eventCard.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        eventCard.add(titleLabel);
 
-        JTextArea descriptionArea = new JTextArea(description);
+        // Description
+        JTextArea descriptionArea = new JTextArea(event.getDescription());
         descriptionArea.setEditable(false);
-        descriptionArea.setLineWrap(true);
-        descriptionArea.setWrapStyleWord(true);
-        eventCard.add(new JScrollPane(descriptionArea), BorderLayout.CENTER);
+        descriptionArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
+        descriptionScrollPane.setPreferredSize(new Dimension(250, 10));
+        eventCard.add(descriptionScrollPane);
+
+        // Price
+        JLabel priceLabel = new JLabel("Price: Ksh" + event.getPrice());
+        priceLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+        eventCard.add(priceLabel);
+
+        // Button Panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(Color.WHITE);
+
+        // Update Button
+        JButton updateButton = new JButton("Update");
+        updateButton.setBackground(new Color(255, 193, 7));
+        updateButton.setForeground(Color.WHITE);
+        updateButton.setFocusPainted(false);
+        updateButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        updateButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        updateButton.addActionListener(e -> showUpdateDialog(event));
+        buttonPanel.add(updateButton);
+
+        // Delete Button
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.setBackground(new Color(220, 53, 69));
+        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setFocusPainted(false);
+        deleteButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        deleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        deleteButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this event?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                boolean success = EventsController.deleteEvent(event.getId());
+                if (success) {
+                    JOptionPane.showMessageDialog(null, "Event deleted successfully!");
+                    refreshEventsPanel();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Failed to delete event. Please try again.");
+                }
+            }
+        });
+        buttonPanel.add(deleteButton);
+
+        eventCard.add(buttonPanel);
 
         return eventCard;
     }
+
+    // Method to show update dialog with current event details
+    private void showUpdateDialog(Event event) {
+        JTextField titleField = new JTextField(event.getTitle());
+        JTextArea descriptionArea = new JTextArea(event.getDescription());
+        JTextField priceField = new JTextField(String.valueOf(event.getPrice()));
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("Title:"));
+        panel.add(titleField);
+        panel.add(new JLabel("Description:"));
+        panel.add(new JScrollPane(descriptionArea));
+        panel.add(new JLabel("Price:"));
+        panel.add(priceField);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Edit Event", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            String updatedTitle = titleField.getText();
+            String updatedDescription = descriptionArea.getText();
+            double updatedPrice;
+            try {
+                updatedPrice = Double.parseDouble(priceField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid price value. Please enter a valid number.");
+                return;
+            }
+
+            // Update event details
+            event.setTitle(updatedTitle);
+            event.setDescription(updatedDescription);
+            event.setPrice(updatedPrice);
+
+            // // Save updated event
+            // boolean success = EventsController.updateEvent(event);
+            // if (success) {
+            //     JOptionPane.showMessageDialog(null, "Event updated successfully!");
+            //     refreshEventsPanel();
+            // } else {
+            //     JOptionPane.showMessageDialog(null, "Failed to update event. Please try again.");
+            // }
+        }
+    }
+
 }

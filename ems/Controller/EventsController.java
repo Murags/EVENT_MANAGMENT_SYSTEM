@@ -7,4 +7,12 @@ public class EventsController {
         Event event = new Event(organizer_id, title, description, price, imageUrl);
         return event.save();
     }
+
+    public static boolean deleteEvent(int eventId){
+        Event event = Event.fetchById(eventId);
+        if(event != null){
+           return event.delete();
+        }
+        return false;
+    }
 }

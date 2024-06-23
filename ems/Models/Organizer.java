@@ -1,8 +1,13 @@
 package ems.Models;
 
+import java.sql.Statement;
 import java.sql.Connection;
-import java.sql.*;
-import ems.db.DBConnection; // Import the DBConnection class if it's in a different package
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import ems.db.DBConnection; // Import the DBConnection class
+import ems.Models.Event; // Import the Event class
 
 /**
  * Represents an Organizer entity with properties and CRUD operations.
@@ -168,5 +173,40 @@ public class Organizer {
             e.printStackTrace();
         }
         return organizer;
+    }
+
+    /**
+     * Fetches all events associated with this organizer.
+     *
+     * @return a list of Event objects associated with this organizer
+     */
+    public List<Event> getEvents() {
+        List<Event> events = new ArrayList<>();
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "SELECT * FROM events WHERE organizer_id=?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, this.id);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Event event = new Event(
+                    rs.getInt("organizer_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getDouble("price"),
+                    rs.getString("image")
+                );
+                event.setId(rs.getInt("id"));
+                events.add(event);
+            }
+            db.closeConnection();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return events;
     }
 }
