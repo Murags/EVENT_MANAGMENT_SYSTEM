@@ -114,6 +114,32 @@ public class Event {
             return false;
         }
     }
+    public boolean delete() {
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "DELETE FROM events WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, this.id);
+            int affectedRows = ps.executeUpdate();
+
+            db.closeConnection();
+
+            if (affectedRows > 0) {
+                System.out.println("Event deleted successfully");
+                return true;
+            } else {
+                System.out.println("No event found with the specified ID");
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     /**
      * Fetches an Event object from the database based on the provided ID.
