@@ -11,12 +11,23 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import ems.Controller.AuthController;
+import ems.Controller.CustomerController;
+import ems.views.CustomerView;
+import ems.Controller.OrganizerController;
+import ems.views.OrganizerView;
+
+import ems.Models.Organizer;
+import ems.Models.Customer;
+
 public class Login extends JFrame implements ActionListener {
-    JPanel Left, Right, TopButtons, Close;
+    JPanel Left, Right, TopButtons, Close, RolePanel;
     JLabel Login, Email, Password, BelowPasswordField, BottomLeft, BottomRight;
     JTextField Email1;
     JPasswordField Password2;
+    JRadioButton userRadio, organizerRadio;
     JButton LoginButton, minimizeButton, maximizeButton, exitButton, signUpBtn;
+    ButtonGroup roleGroup;
 
     public Login() {
         Login = new JLabel();
@@ -42,6 +53,17 @@ public class Login extends JFrame implements ActionListener {
         Password2.setBounds(110, 240, 250, 30);
         Password2.setBorder(new EtchedBorder());
 
+        userRadio = new JRadioButton("User");
+        organizerRadio = new JRadioButton("Organizer");
+        roleGroup = new ButtonGroup();
+        roleGroup.add(userRadio);
+        roleGroup.add(organizerRadio);
+        RolePanel = new JPanel(new GridLayout(1, 2));
+        RolePanel.add(userRadio);
+        RolePanel.add(organizerRadio);
+        RolePanel.setBounds(110, 280, 250, 30);
+        RolePanel.setBackground(new Color(255, 212, 193, 255));
+
         LoginButton = new JButton();
         LoginButton.setBorder(new EtchedBorder());
         LoginButton.setText("Login");
@@ -49,18 +71,18 @@ public class Login extends JFrame implements ActionListener {
         LoginButton.setForeground(Color.white);
         LoginButton.setFont(new Font("sans serif", Font.BOLD, 12));
         LoginButton.setFocusable(false);
-        LoginButton.setBounds(110, 280, 250, 30);
+        LoginButton.setBounds(110, 320, 250, 30);
         LoginButton.addActionListener(this);
 
         BelowPasswordField = new JLabel("Don't have an account?");
         BelowPasswordField.setFont(new Font("sans serif", Font.PLAIN, 8));
-        BelowPasswordField.setBounds(140, 320, 150, 40);
+        BelowPasswordField.setBounds(140, 340, 150, 40);
         BelowPasswordField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         BelowPasswordField.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 dispose(); // Close the current Login window
-                SwingUtilities.invokeLater(() -> {
+                SwingUtilities.invokeLater(() -> {//GUI threading
                     SignUp signUp = new SignUp();
                     signUp.setVisible(true);
                 });
@@ -88,6 +110,7 @@ public class Login extends JFrame implements ActionListener {
         Left.add(BottomLeft);
         Left.add(BottomRight);
         Left.add(Login);
+        Left.add(RolePanel);
 
         Right = new JPanel();
         Right.setLayout(new BorderLayout(0, 0));
@@ -155,12 +178,24 @@ public class Login extends JFrame implements ActionListener {
                 // If validation succeeds, authenticate user
                 String email = Email1.getText();
                 String password = new String(Password2.getPassword());
+                String role = userRadio.isSelected() ? "User" : "Organizer" ;
 
-                // Authentication logic here
-                boolean success = authenticateUser(email, password);
+                boolean success = AuthController.login(email, password, role);
                 if (success) {
                     // Redirect to the main application page
                     JOptionPane.showMessageDialog(this, "Login successful!");
+                    this.dispose();
+                    if(role == "User"){
+                        CustomerController.getCustomer(email);
+                        CustomerView customerView = new CustomerView();
+                        customerView.setVisible(true);
+                    }
+                    else{
+                        Organizer organizer = OrganizerController.getOrganizer(email);
+                        OrganizerView organizerView = new OrganizerView(organizer);
+                        organizerView.setVisible(true);
+                    }
+
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid credentials. Please try again.");
                 }
@@ -173,13 +208,6 @@ public class Login extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please fill in all required fields.");
             return false;
         }
-        return true;
-    }
-
-    private boolean authenticateUser(String email, String password) {
-        // Implement the authentication logic here
-        // Return true if authentication is successful, false otherwise
-        // For demonstration purposes, we'll assume authentication is always successful
         return true;
     }
 }

@@ -8,6 +8,7 @@ import ems.db.DBConnection; // Import the DBConnection class if it's in a differ
  * Represents an Organizer entity with properties and CRUD operations.
  */
 public class Organizer {
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
@@ -35,6 +36,14 @@ public class Organizer {
     }
 
     // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -89,20 +98,20 @@ public class Organizer {
      * @return a string representation of the Organizer object
      */
     @Override
-    public String toString(){
-        return "Organizer [" + "firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", gender=" + gender + ", phone=" + phone + "]";
+    public String toString() {
+        return "Organizer [" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", gender=" + gender + ", phone=" + phone + "]";
     }
 
     /**
-     * Saves the Organizer object to the database.
+     * Saves the Organizer object to the database and sets the ID.
      */
-    public void save(){
-        try{
+    public void save() {
+        try {
             DBConnection db = new DBConnection();
             Connection con = db.getConnection();
 
             String query = "INSERT INTO organizers (First_Name, Last_Name, email, password, gender, phone) VALUES(?,?,?,?,?,?)";
-            PreparedStatement ps = con.prepareStatement(query);
+            PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, this.firstName);
             ps.setString(2, this.lastName);
             ps.setString(3, this.email);
@@ -110,24 +119,30 @@ public class Organizer {
             ps.setString(5, this.gender);
             ps.setString(6, this.phone);
             ps.executeUpdate();
+
+            // Get the generated ID
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                this.id = rs.getInt(1);
+            }
+
             db.closeConnection();
             System.out.println("Organizer added successfully");
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Fetches anOrganizer object from the database based on the provided email and password.
+     * Fetches an Organizer object from the database based on the provided email.
      *
      * @param email the email address of the organizer
-     * @param password the password of the organizer
      * @return the matched Organizer object from the database or null if not found
      */
-    public static Organizer fetchByEmail(String email){
+    public static Organizer fetchByEmail(String email) {
         Organizer organizer = null;
-        try{
+        try {
             DBConnection db = new DBConnection();
             Connection con = db.getConnection();
 
@@ -136,7 +151,7 @@ public class Organizer {
             ps.setString(1, email);
 
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 organizer = new Organizer(
                     rs.getString("First_Name"),
                     rs.getString("Last_Name"),
@@ -145,10 +160,11 @@ public class Organizer {
                     rs.getString("gender"),
                     rs.getString("phone")
                 );
+                organizer.setId(rs.getInt("id")); // Set the ID
             }
             db.closeConnection();
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return organizer;
