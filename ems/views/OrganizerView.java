@@ -460,14 +460,14 @@ public class OrganizerView extends JFrame {
             event.setDescription(updatedDescription);
             event.setPrice(updatedPrice);
 
-            // // Save updated event
-            // boolean success = EventsController.updateEvent(event);
-            // if (success) {
-            //     JOptionPane.showMessageDialog(null, "Event updated successfully!");
-            //     refreshEventsPanel();
-            // } else {
-            //     JOptionPane.showMessageDialog(null, "Failed to update event. Please try again.");
-            // }
+            // Save updated event
+            boolean success = EventsController.updateEvent(event);
+            if (success) {
+                JOptionPane.showMessageDialog(null, "Event updated successfully!");
+                refreshEventsPanel();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to update event. Please try again.");
+            }
         }
     }
 

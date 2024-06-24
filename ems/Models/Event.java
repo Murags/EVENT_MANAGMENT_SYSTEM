@@ -116,6 +116,29 @@ public class Event {
             return false;
         }
     }
+
+    public boolean update(){
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+            String query = "UPDATE events SET organizer_id = ?, title = ?, description = ?, price = ?, image = ? WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, this.organizerId);
+            ps.setString(2, this.title);
+            ps.setString(3, this.description);
+            ps.setDouble(4, this.price);
+            ps.setString(5, this.image);
+            ps.setInt(6, this.id);
+            ps.executeUpdate();
+            db.closeConnection();
+            System.out.println("Event updated successfully");
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean delete() {
         try {
             DBConnection db = new DBConnection();

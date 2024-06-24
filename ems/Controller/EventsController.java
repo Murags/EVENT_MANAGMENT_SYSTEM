@@ -18,6 +18,10 @@ public class EventsController {
         return false;
     }
 
+    public static boolean updateEvent(Event event){
+        return event.update();
+    }
+
     public static List<Event> allEvents(){
         return Event.all();
     }
