@@ -6,13 +6,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class HomePage2 extends JFrame implements ActionListener
+public class Home extends JFrame implements ActionListener
 {
     JPanel Panel1;
     JLabel Label1;
     JButton SignUp,Login1;
 
-    public HomePage2()
+    public Home()
     {
 
         Login1 = new JButton("LOGIN");
@@ -38,7 +38,7 @@ public class HomePage2 extends JFrame implements ActionListener
 
 
         Label1 = new JLabel();
-        ImageIcon Icon = new ImageIcon("logo3.png");
+        ImageIcon Icon = new ImageIcon("img/logo3.png");
         Label1.setIcon(Icon);
         Label1.add(SignUp);
         Label1.add(Login1);
