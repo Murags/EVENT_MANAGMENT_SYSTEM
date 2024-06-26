@@ -92,7 +92,7 @@ public class SignUp extends JFrame implements ActionListener {
         GetStarted.addActionListener(this);
         GetStarted.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        BelowPasswordField = new JLabel("Already have an account?");
+        BelowPasswordField = new JLabel("<html>Already have an account?<strong>Login</strong></html>");
         BelowPasswordField.setFont(new Font("sans serif", Font.PLAIN, 8));
         BelowPasswordField.setBounds(140, 570, 150, 40);
         BelowPasswordField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -116,7 +116,9 @@ public class SignUp extends JFrame implements ActionListener {
         BottomRight.setBounds(340, 620, 150, 30);
 
         femaleRadio = new JRadioButton("F");
+        femaleRadio.setFocusable(false);
         maleRadio = new JRadioButton("M");
+        maleRadio.setFocusable(false);
         genderGroup = new ButtonGroup();
         genderGroup.add(femaleRadio);
         genderGroup.add(maleRadio);
@@ -127,7 +129,9 @@ public class SignUp extends JFrame implements ActionListener {
         genderPanel.setBackground(new Color(255, 212, 193, 255));
 
         userRadio = new JRadioButton("User");
+        userRadio.setFocusable(false);
         organizerRadio = new JRadioButton("Organizer");
+        organizerRadio.setFocusable(false);
         roleGroup = new ButtonGroup();
         roleGroup.add(userRadio);
         roleGroup.add(organizerRadio);
@@ -139,7 +143,7 @@ public class SignUp extends JFrame implements ActionListener {
 
         Left = new JPanel();
         Left.setPreferredSize(new Dimension(450, 700));
-        Left.setBackground(new Color(255, 212, 193, 255));
+        Left.setBackground(new Color(221, 218, 238));
         Left.setLayout(null);
         Left.add(FName);
         Left.add(FNameT);
@@ -160,10 +164,17 @@ public class SignUp extends JFrame implements ActionListener {
         Left.add(RolePanel);
         Left.add(genderPanel);
 
+        ImageIcon Icon = new ImageIcon("img/logo3.png");
+        Right1 = new JLabel();
+        Right1.setIcon(Icon);
+        Right1.setBorder(BorderFactory.createEmptyBorder());
+        Right1.setBackground(new Color(63,63,63,255));
+
         Right = new JPanel();
         Right.setLayout(new BorderLayout(0, 0));
         Right.setPreferredSize(new Dimension(450, 700));
         Right.setBackground(new Color(63, 63, 63, 255));
+        Right.add(Right1, BorderLayout.SOUTH);
 
         exitButton = new JButton();
         ImageIcon icon = new ImageIcon("img/RED BUTTON.jpg");
@@ -257,7 +268,7 @@ public class SignUp extends JFrame implements ActionListener {
                         boolean success = CustomerController.createCustomer(userData);
 
                         if (success) {
-                            // Registration successful, navigate to login view or show success message
+                            // Registration successful, navigate to log in view or show success message
                             JOptionPane.showMessageDialog(this, "Registration successful. Please log in.");
                             // Close the current SignUp window
                             this.dispose();
@@ -287,7 +298,7 @@ public class SignUp extends JFrame implements ActionListener {
                         boolean success = OrganizerController.createOrganizer(userData);
 
                         if (success) {
-                            // Registration successful, navigate to login view or show success message
+                            // Registration successful, navigate to log in view or show success message
                             JOptionPane.showMessageDialog(this, "Registration successful. Please log in.");
                             // Close the current SignUp window
                             this.dispose();

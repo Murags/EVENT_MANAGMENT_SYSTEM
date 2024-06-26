@@ -1,18 +1,9 @@
 package ems.main;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.*;
 import javax.swing.SwingUtilities;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import ems.views.Home;
 
-import ems.Controller.CustomerController;
-import ems.db.DBConnection; // Import the DBConnection class if it's in a different package
-import ems.Models.Customer;
-
-import ems.views.SignUp;
 /**
  * The Main class is the entry point of the application.
  */
@@ -24,8 +15,9 @@ public class Main {
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->{
-            SignUp signUp = new SignUp();
-            signUp.setVisible(true);
+            Home Home = new Home();
+            Home.setVisible(true);
+
         });
     }
 }

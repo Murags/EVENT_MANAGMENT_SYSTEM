@@ -22,7 +22,7 @@ import ems.Models.Customer;
 
 public class Login extends JFrame implements ActionListener {
     JPanel Left, Right, TopButtons, Close, RolePanel;
-    JLabel Login, Email, Password, BelowPasswordField, BottomLeft, BottomRight;
+    JLabel Right1, Login, Email, Password, BelowPasswordField, BottomLeft, BottomRight;
     JTextField Email1;
     JPasswordField Password2;
     JRadioButton userRadio, organizerRadio;
@@ -33,36 +33,38 @@ public class Login extends JFrame implements ActionListener {
         Login = new JLabel();
         Login.setText("Login");
         Login.setFont(new Font("Forum", Font.BOLD, 15));
-        Login.setBounds(110, 120, 200, 30);
+        Login.setBounds(190, 180, 200, 30);
 
         Email = new JLabel();
         Email.setText("<html>Email<sup>*</sup></html>");
         Email.setFont(new Font("Times New Roman", Font.BOLD, 12));
-        Email.setBounds(110, 150, 200, 30);
+        Email.setBounds(110, 210, 200, 30);
 
         Email1 = new JTextField();
-        Email1.setBounds(110, 180, 250, 30);
+        Email1.setBounds(110, 240, 250, 30);
         Email1.setBorder(new EtchedBorder());
 
         Password = new JLabel();
         Password.setText("<html>Password<sup>*</sup></html>");
         Password.setFont(new Font("Times New Roman", Font.BOLD, 12));
-        Password.setBounds(110, 210, 200, 30);
+        Password.setBounds(110, 270, 200, 30);
 
         Password2 = new JPasswordField();
-        Password2.setBounds(110, 240, 250, 30);
+        Password2.setBounds(110, 300, 250, 30);
         Password2.setBorder(new EtchedBorder());
 
         userRadio = new JRadioButton("User");
+        userRadio.setFocusable(false);
         organizerRadio = new JRadioButton("Organizer");
+        organizerRadio.setFocusable(false);
         roleGroup = new ButtonGroup();
         roleGroup.add(userRadio);
         roleGroup.add(organizerRadio);
         RolePanel = new JPanel(new GridLayout(1, 2));
         RolePanel.add(userRadio);
         RolePanel.add(organizerRadio);
-        RolePanel.setBounds(110, 280, 250, 30);
-        RolePanel.setBackground(new Color(255, 212, 193, 255));
+        RolePanel.setBounds(110, 340, 250, 30);
+        RolePanel.setBackground(new Color(221, 218, 238));
 
         LoginButton = new JButton();
         LoginButton.setBorder(new EtchedBorder());
@@ -71,12 +73,12 @@ public class Login extends JFrame implements ActionListener {
         LoginButton.setForeground(Color.white);
         LoginButton.setFont(new Font("sans serif", Font.BOLD, 12));
         LoginButton.setFocusable(false);
-        LoginButton.setBounds(110, 320, 250, 30);
+        LoginButton.setBounds(110, 380, 250, 30);
         LoginButton.addActionListener(this);
 
-        BelowPasswordField = new JLabel("Don't have an account?");
+        BelowPasswordField = new JLabel("<html>Don't have an account?<strong>Sign Up</strong></html>");
         BelowPasswordField.setFont(new Font("sans serif", Font.PLAIN, 8));
-        BelowPasswordField.setBounds(140, 340, 150, 40);
+        BelowPasswordField.setBounds(140, 400, 150, 40);
         BelowPasswordField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         BelowPasswordField.addMouseListener(new MouseAdapter() {
             @Override
@@ -91,15 +93,15 @@ public class Login extends JFrame implements ActionListener {
 
         BottomLeft = new JLabel("© Inity 2024");
         BottomLeft.setFont(new Font("Calibri", Font.BOLD, 9));
-        BottomLeft.setBounds(40, 370, 150, 30);
+        BottomLeft.setBounds(40, 620, 150, 30);
 
         BottomRight = new JLabel("✉ info@Maestroagency");
         BottomRight.setFont(new Font("Deja Vu Sans", Font.BOLD, 9));
-        BottomRight.setBounds(340, 370, 150, 30);
+        BottomRight.setBounds(340, 620, 150, 30);
 
         Left = new JPanel();
         Left.setPreferredSize(new Dimension(450, 700));
-        Left.setBackground(new Color(255, 212, 193, 255));
+        Left.setBackground(new Color(221, 218, 238));
         Left.setLayout(null);
         Left.add(Email);
         Left.add(Email1);
@@ -112,10 +114,18 @@ public class Login extends JFrame implements ActionListener {
         Left.add(Login);
         Left.add(RolePanel);
 
+
+        ImageIcon Icon = new ImageIcon("img/logo3.png");
+        Right1 = new JLabel();
+        Right1.setIcon(Icon);
+        Right1.setBorder(BorderFactory.createEmptyBorder());
+        Right1.setBackground(new Color(63,63,63,255));
+
         Right = new JPanel();
         Right.setLayout(new BorderLayout(0, 0));
         Right.setPreferredSize(new Dimension(450, 700));
         Right.setBackground(new Color(63, 63, 63, 255));
+        Right.add(Right1, BorderLayout.SOUTH);
 
         exitButton = new JButton();
         ImageIcon icon = new ImageIcon("img/RED BUTTON.jpg");
