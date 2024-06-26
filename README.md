@@ -24,3 +24,9 @@ powershell
 java -cp ".;.\mysql-connector-j-8.3.0.jar" ems.main.Main
 ```
 By following these steps, you should be able to compile and run the Event Management System application successfully.
+
+
+
+
+javac -cp ".;.\jackson-annotations-2.0.1.jar;.\jackson-core-2.2.3.jar;.\jackson-databind-2.1.4.jar" MpesaSTKPush.java
+java -cp ".;.\jackson-annotations-2.0.1.jar;.\jackson-core-2.2.3.jar;.\jackson-databind-2.1.4.jar" MpesaSTKPush
