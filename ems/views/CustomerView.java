@@ -187,7 +187,7 @@ public class CustomerView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Implement booking action here
-                boolean success = BookingsController.createBooking(customer.getId(), event.getId());
+                boolean success = BookingsController.createBooking(customer, event);
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Successfully booked event: " + event.getTitle());
                 } else {

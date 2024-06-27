@@ -119,7 +119,7 @@ public class Customer {
             ps.setString(3, this.email);
             ps.setString(4, this.password);
             ps.setString(5, this.gender);
-            ps.setString(6, this.phone);
+            ps.setString(6, this.phone.substring(1));
             ps.executeUpdate();
 
             // Get the generated ID

@@ -1,3 +1,5 @@
+package ems.Utils;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,14 +19,8 @@ public class MpesaSTKPush {
     private static final String PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
     private static final String CALLBACK_URL = "https://sandbox.safaricom.co.ke/mpesa/";
 
-    public static void main(String[] args) throws Exception {
-        String token = getAccessToken();
-        if (token != null) {
-            triggerSTKPush(token);
-        }
-    }
 
-    private static String getAccessToken() throws Exception {
+    public static String getAccessToken() throws Exception {
         String auth = CONSUMER_KEY + ":" + CONSUMER_SECRET;
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
@@ -49,20 +45,22 @@ public class MpesaSTKPush {
         }
     }
 
-    private static void triggerSTKPush(String token) throws Exception {
+    public static void triggerSTKPush(String token, String phoneNumber, String amount) throws Exception {
         // Format the timestamp correctly
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String password = Base64.getEncoder().encodeToString((SHORTCODE + PASSKEY + timestamp).getBytes());
+
+
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("BusinessShortCode", SHORTCODE);
         payload.put("Password", password);
         payload.put("Timestamp", timestamp);
         payload.put("TransactionType", "CustomerPayBillOnline");
-        payload.put("Amount", "1"); // Amount to charge
+        payload.put("Amount", amount); // Amount to charge
         payload.put("PartyA", "254708626805"); // Customer's phone number in international format
         payload.put("PartyB", SHORTCODE);
-        payload.put("PhoneNumber", "254708626805"); // Customer's phone number in international format
+        payload.put("PhoneNumber", phoneNumber); // Customer's phone number in international format
         payload.put("CallBackURL", CALLBACK_URL);
         payload.put("AccountReference", "AccountReference");
         payload.put("TransactionDesc", "Payment description");
