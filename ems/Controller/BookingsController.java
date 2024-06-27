@@ -25,7 +25,7 @@ public class BookingsController {
             {
                 int amount = (int)event.getPrice();
                 String phone = "254" + customer.getPhone();
-                System.out.println(phone);
+                // System.out.println(phone);
                 MpesaSTKPush.triggerSTKPush(token, phone, String.valueOf(amount));
 
                 Booking booking = new Booking(customer.getId(), event.getId(), bookingDate);
