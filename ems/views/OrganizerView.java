@@ -183,12 +183,7 @@ public class OrganizerView extends JFrame {
         return panel;
     }
 
-   /*  private JPanel createSettingsPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(240, 240, 240));
-        panel.add(new JLabel("Settings will be configured here."));
-        return panel;
-    } */
+   
     private JPanel createSettingsPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(240, 240, 240));
@@ -227,13 +222,22 @@ public class OrganizerView extends JFrame {
         // Update button
         JButton updateButton = new JButton("Update");
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = -2;
         gbc.gridwidth = 1;
+        updateButton.setMaximumSize(new Dimension(180, 40));
+        updateButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        updateButton.setBackground(new Color(55, 55, 55));
+        updateButton.setForeground(Color.WHITE);
         panel.add(updateButton, gbc);
 
         // Delete button
         JButton deleteButton = new JButton("Delete");
         gbc.gridx = 1;
+        gbc.gridy = -2;
+        deleteButton.setMaximumSize(new Dimension(180, 40));
+        deleteButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        deleteButton.setBackground(new Color(55, 55, 55));
+        deleteButton.setForeground(Color.WHITE);
         panel.add(deleteButton, gbc);
 
         // Action listener for update button
@@ -382,6 +386,10 @@ public class OrganizerView extends JFrame {
         JLabel imageLabel = new JLabel("No file chosen");
         imagePanel.add(imageLabel, BorderLayout.CENTER);
         JButton uploadImageButton = new JButton("Upload");
+        uploadImageButton.setMaximumSize(new Dimension(180, 40));
+        uploadImageButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        uploadImageButton.setBackground(new Color(55, 55, 55));
+        uploadImageButton.setForeground(Color.WHITE);
         uploadImageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -417,6 +425,10 @@ public class OrganizerView extends JFrame {
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         JButton createEventButton = new JButton("Create Event");
+        createEventButton.setMaximumSize(new Dimension(180, 40));
+        createEventButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        createEventButton.setBackground(new Color(55, 55, 55));
+        createEventButton.setForeground(Color.WHITE);
         panel.add(createEventButton, gbc);
 
         createEventButton.addActionListener(new ActionListener() {

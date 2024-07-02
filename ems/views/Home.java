@@ -38,7 +38,7 @@ public class Home extends JFrame implements ActionListener
 
 
         Label1 = new JLabel();
-        ImageIcon Icon = new ImageIcon("img/logo3.png");
+        ImageIcon Icon = new ImageIcon("./img/logo3.png");
         Label1.setIcon(Icon);
         Label1.add(SignUp);
         Label1.add(Login1);
