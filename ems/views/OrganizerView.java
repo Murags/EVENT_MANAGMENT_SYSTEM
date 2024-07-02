@@ -158,6 +158,11 @@ public class OrganizerView extends JFrame {
         JPanel panel = new JPanel();
         panel.setBackground(new Color(240, 240, 240));
         panel.add(new JLabel("Welcome to the Dashboard!"));
+        // Loading the image
+        ImageIcon imageIcon = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\logo3.png");
+        // Create a label with the image
+        JLabel imageLabel = new JLabel(imageIcon);
+        panel.add(imageLabel);
         return panel;
     }
 

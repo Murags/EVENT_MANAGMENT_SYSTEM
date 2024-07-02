@@ -1,7 +1,5 @@
 package ems.views;
 
-import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
@@ -164,7 +162,7 @@ public class SignUp extends JFrame implements ActionListener {
         Left.add(RolePanel);
         Left.add(genderPanel);
 
-        ImageIcon Icon = new ImageIcon("img/logo3.png");
+        ImageIcon Icon = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\logo3.png");
         Right1 = new JLabel();
         Right1.setIcon(Icon);
         Right1.setBorder(BorderFactory.createEmptyBorder());
@@ -177,7 +175,7 @@ public class SignUp extends JFrame implements ActionListener {
         Right.add(Right1, BorderLayout.SOUTH);
 
         exitButton = new JButton();
-        ImageIcon icon = new ImageIcon("img/RED BUTTON.jpg");
+        ImageIcon icon = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\RED BUTTON.jpg");
         exitButton.setIcon(icon);
         exitButton.setFocusable(false);
         exitButton.setContentAreaFilled(false);
@@ -189,14 +187,14 @@ public class SignUp extends JFrame implements ActionListener {
         maximizeButton.setBackground(new Color(50, 50, 47, 255));
         maximizeButton.setContentAreaFilled(false);
         maximizeButton.setPreferredSize(new Dimension(40, 40));
-        ImageIcon icon1 = new ImageIcon("img/Orange colour.jpg");
+        ImageIcon icon1 = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\Orange Colour.jpg");
         maximizeButton.setIcon(icon1);
         maximizeButton.setFocusable(false);
         maximizeButton.setBorder(BorderFactory.createEmptyBorder());
 
         minimizeButton = new JButton();
         minimizeButton.setBackground(new Color(50, 50, 47, 255));
-        ImageIcon icon3 = new ImageIcon("img/Minimize Button.jpg");
+        ImageIcon icon3 = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\Minimize Butto.jpg");
         minimizeButton.setIcon(icon3);
         minimizeButton.setFocusable(false);
         minimizeButton.setContentAreaFilled(false);

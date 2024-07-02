@@ -1,7 +1,5 @@
 package ems.views;
 
-import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -115,7 +113,7 @@ public class Login extends JFrame implements ActionListener {
         Left.add(RolePanel);
 
 
-        ImageIcon Icon = new ImageIcon("img/logo3.png");
+        ImageIcon Icon = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\logo3.png");
         Right1 = new JLabel();
         Right1.setIcon(Icon);
         Right1.setBorder(BorderFactory.createEmptyBorder());

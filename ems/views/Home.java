@@ -38,7 +38,7 @@ public class Home extends JFrame implements ActionListener
 
 
         Label1 = new JLabel();
-        ImageIcon Icon = new ImageIcon("./img/logo3.png");
+        ImageIcon Icon = new ImageIcon("C:\\Users\\User\\Desktop\\It projects\\EMS\\EVENT_MANAGMENT_SYSTEM\\img\\logo3.png");
         Label1.setIcon(Icon);
         Label1.add(SignUp);
         Label1.add(Login1);
@@ -54,6 +54,7 @@ public class Home extends JFrame implements ActionListener
         this.setVisible(true);
         this.add(Panel1);
         this.add(Label1);
+        
 
     }
 
