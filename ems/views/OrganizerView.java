@@ -11,16 +11,20 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import ems.Controller.EventsController;
 import ems.Models.Organizer;
+import ems.db.DBConnection;
 import ems.Models.Event;
+import ems.views.Login;
 
 public class OrganizerView extends JFrame {
 
-    private JButton dashboardButton, eventsButton, bookingsButton, createEventButton, settingsButton;
+    private JButton dashboardButton, eventsButton, bookingsButton, createEventButton, settingsButton,signOutButton;
     private JPanel contentArea;
     private Organizer organizer;
 
@@ -28,7 +32,7 @@ public class OrganizerView extends JFrame {
         this.organizer = organizer;
         System.out.println(organizer.getEmail());
         // Set up the main frame
-        setTitle("Event Management Dashboard");
+        setTitle("Organizer Dashboard");
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -49,10 +53,12 @@ public class OrganizerView extends JFrame {
         contentArea.add(new JScrollPane(createBookingsPanel()), "Bookings");
         contentArea.add(new JScrollPane(createSettingsPanel()), "Settings");
         contentArea.add(new JScrollPane(createCreateEventPanel()), "Create Event");
+        //contentArea.add(new JScrollPane(createsignOutPanel()),"SignOut");
         add(contentArea, BorderLayout.CENTER);
 
         setActiveButton(dashboardButton); // Set initial active button and content
         showPanel("Dashboard");
+        //setActiveButton(signOutButton);
     }
 
     private JPanel createTopBar() {
@@ -80,6 +86,7 @@ public class OrganizerView extends JFrame {
         bookingsButton = createSidebarButton("Bookings");
         createEventButton = createSidebarButton("Create Event");
         settingsButton = createSidebarButton("Settings");
+        signOutButton = createSidebarButton("SignOut");
 
         sidebar.add(Box.createVerticalStrut(20));
         sidebar.add(dashboardButton);
@@ -91,6 +98,8 @@ public class OrganizerView extends JFrame {
         sidebar.add(createEventButton);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(settingsButton);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(signOutButton);
 
         return sidebar;
     }
@@ -112,20 +121,24 @@ public class OrganizerView extends JFrame {
                 new EmptyBorder(5, 15, 5, 15)
         ));
 
-        // Add action listener to change active button and content
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setActiveButton(button);
-                showPanel(text);
+      // Add action listener to change active button and content
+      button.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setActiveButton(button);
+            showPanel(text);
+            if (text.equals("SignOut")) {
+                dispose(); // Close the current Organizer dashboard window
+                SwingUtilities.invokeLater(() ->  new Login().setVisible(true)
+                );
             }
-        });
-
+        }
+    });
         return button;
     }
 
     private void setActiveButton(JButton activeButton) {
-        JButton[] buttons = {dashboardButton, eventsButton, bookingsButton, createEventButton, settingsButton};
+        JButton[] buttons = {dashboardButton, eventsButton, bookingsButton, createEventButton, settingsButton,signOutButton};
 
         for (JButton button : buttons) {
             if (button == activeButton) {
@@ -170,13 +183,140 @@ public class OrganizerView extends JFrame {
         return panel;
     }
 
-    private JPanel createSettingsPanel() {
+   /*  private JPanel createSettingsPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(new Color(240, 240, 240));
         panel.add(new JLabel("Settings will be configured here."));
         return panel;
-    }
+    } */
+    private JPanel createSettingsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(240, 240, 240));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        // Labels and text fields for organizer information
+        JLabel nameLabel = new JLabel("Name:");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(nameLabel, gbc);
+
+        JTextField nameField = new JTextField(organizer.getFirstName(), 20);
+        gbc.gridx = 1;
+        panel.add(nameField, gbc);
+
+        JLabel emailLabel = new JLabel("Email:");
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(emailLabel, gbc);
+
+        JTextField emailField = new JTextField(organizer.getEmail(), 20);
+        gbc.gridx = 1;
+        panel.add(emailField, gbc);
+
+        JLabel passLabel = new JLabel("Password:");
+        gbc.gridx = 0;
+        gbc.gridy = -1;
+        panel.add(passLabel, gbc);
+
+        JTextField passField = new JTextField(organizer.getPassword(),20);
+        gbc.gridx = 1;
+        panel.add(passField, gbc);
+        // Add more fields if needed
+        // Update button
+        JButton updateButton = new JButton("Update");
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        panel.add(updateButton, gbc);
+
+        // Delete button
+        JButton deleteButton = new JButton("Delete");
+        gbc.gridx = 1;
+        panel.add(deleteButton, gbc);
+
+        // Action listener for update button
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the organizer's details
+                String newName = nameField.getText();
+                String newEmail = emailField.getText();
+                String newPassword = passField.getText();
+              
+                //code to update the database or model here
+
+                 try{
+                        DBConnection db = new DBConnection();
+                        Connection con = db.getConnection();
+
+                        String query = "UPDATE organizers SET First_Name = ? , email = ? , password = ? WHERE id = ?";
+                        
+                        PreparedStatement ps = con.prepareStatement(query);
+                        ps.setString(1,newName);
+                        ps.setString(2,newEmail);
+                        ps.setString(3,newPassword);
+                        ps.setInt(4,organizer.getId());
+                        
+                        int rowsAffectected = ps.executeUpdate();
+                        if(rowsAffectected > 0){
+                            organizer.setFirstName(newName);
+                            organizer.setEmail(newEmail);
+                            organizer.setPassword(newPassword);
+                            JOptionPane.showMessageDialog(panel, "Organizer details updated successfully!");
+                            dispose();
+                            new Login().setVisible(true);
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(panel, "Organizer details update failed. Please Try Again!");
+                        }
+                    }catch(SQLException | ClassNotFoundException em){
+                    em.printStackTrace();
+                    JOptionPane.showMessageDialog(panel, "Database Connection erro"+em.getMessage());
+                } 
+                
+            }
+        });
+
+        // Action listener for delete button
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Perform the delete operation
+                // code to delete the organizer from the database or model here
+
+                int confirmation = JOptionPane.showConfirmDialog(panel, "Are you sure you want to delete this organizer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                if(confirmation == JOptionPane.YES_OPTION){
+                      try{
+                            DBConnection db = new DBConnection();
+                            Connection con = db.getConnection();
+
+                            String query = "DELETE FROM organizers WHERE id = ?";
+                            PreparedStatement pmt = con.prepareStatement(query);
+                            pmt.setInt(1, organizer.getId());
+                            int rowsAffectected = pmt.executeUpdate();
+
+                            if(rowsAffectected > 0){
+                                JOptionPane.showMessageDialog(panel, "Organizer deleted successfully!");
+                                dispose();
+                                new Login().setVisible(true);
+                            }
+                            else{
+                                JOptionPane.showMessageDialog(panel, "Organizer deletetion failed. Please Try Again!");
+
+                            }
+                      }catch(ClassNotFoundException | SQLException emp){
+                          emp.printStackTrace();
+                      }
+                }
+                // Redirect to login screen or close the application
+                
+            }
+        });
+
+        return panel;
+    }
     private JPanel createCreateEventPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -217,6 +357,8 @@ public class OrganizerView extends JFrame {
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
         JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea); // Wrap JTextArea in JScrollPane
+        descriptionScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);// vertical scroll bar
+
         panel.add(descriptionScrollPane, gbc);
 
         gbc.gridy++;

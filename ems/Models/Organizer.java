@@ -209,4 +209,7 @@ public class Organizer {
         }
         return events;
     }
+    public void update(){
+        
+    }
 }
