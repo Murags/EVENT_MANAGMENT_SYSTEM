@@ -13,10 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MpesaSTKPush {
 
-    private static final String CONSUMER_KEY = "RPjjywZDygUeB6iUVqy6OOOPJKiL68z";
-    private static final String CONSUMER_SECRET = "3hTj9xeV6brORo";
+    private static final String CONSUMER_KEY = "RvkufEYOcO9uKqa5RSzGp2EA7i5CkzOAEeuDdugIIQqAd11A";
+    private static final String CONSUMER_SECRET = "2Lu4rL9UTWiSQxIk1BT51jYgriPVkMJ7gnKWZHvAY5N4tKyu3QGBvhEyyObh9LyJ";
     private static final String SHORTCODE = "174379";
-    private static final String PASSKEY = "bfb279f9aa9bdbcf158e97dd71a4672e0c893059b10f78e6b72ada1ed2c919";
+    private static final String PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
     private static final String CALLBACK_URL = "https://sandbox.safaricom.co.ke/mpesa/";
 
 
@@ -33,8 +33,8 @@ public class MpesaSTKPush {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Log the status code and response body for debugging
-        System.out.println("Status code: " + response.statusCode());
-        System.out.println("Response body: " + response.body());
+        // System.out.println("Status code: " + response.statusCode());
+        // System.out.println("Response body: " + response.body());
 
         if (response.statusCode() == 200) {
             Map<String, Object> result = new ObjectMapper().readValue(response.body(), HashMap.class);
@@ -50,7 +50,7 @@ public class MpesaSTKPush {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String password = Base64.getEncoder().encodeToString((SHORTCODE + PASSKEY + timestamp).getBytes());
 
-
+        System.out.println(password);
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("BusinessShortCode", SHORTCODE);
