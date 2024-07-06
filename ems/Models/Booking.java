@@ -1,11 +1,10 @@
 package ems.Models;
 
+import ems.db.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-
-import ems.db.DBConnection;
 
 public class Booking {
     private int id;
@@ -125,5 +124,29 @@ public class Booking {
             e.printStackTrace();
         }
         return booking;
+    }
+    
+    public String attendeeName() {
+        String attendeeName = "";
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "SELECT first_name, last_name FROM customers WHERE id=?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, this.customerId);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                attendeeName = firstName + " " + lastName;
+            }
+
+            db.closeConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return attendeeName;
     }
 }
