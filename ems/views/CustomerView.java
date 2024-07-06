@@ -15,15 +15,17 @@ import ems.Controller.EventsController;
 public class CustomerView extends JFrame {
 
     private Customer customer;
-    private JButton homeButton, eventsButton, bookingsButton, profileButton;
+    private JButton homeButton, eventsButton, bookingsButton, profileButton, exitButton, maximizeButton, minimizeButton;
+    private JPanel TopButtons;
 
     public CustomerView(Customer customer) {
         this.customer = customer;
         // Set up the main frame
         setTitle("Event Management Dashboard");
-        setSize(1200, 800);
+        setSize(1490, 880);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setUndecorated(true);
         setLayout(new BorderLayout());
 
         // Add top bar
@@ -40,23 +42,54 @@ public class CustomerView extends JFrame {
     }
 
     private JPanel createTopBar() {
+        exitButton = new JButton();
+        ImageIcon icon = new ImageIcon("img/RED BUTTON.jpg");
+        exitButton.setIcon(icon);
+        exitButton.setFocusable(false);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setBackground(new Color(50, 50, 47, 255));
+        exitButton.setBorder(BorderFactory.createEmptyBorder());
+        exitButton.addActionListener(e -> System.exit(0));
+
+        maximizeButton = new JButton();
+        maximizeButton.setBackground(new Color(50, 50, 47, 255));
+        maximizeButton.setContentAreaFilled(false);
+        maximizeButton.setPreferredSize(new Dimension(40, 40));
+        ImageIcon icon1 = new ImageIcon("img/Orange colour.jpg");
+        maximizeButton.setIcon(icon1);
+        maximizeButton.setFocusable(false);
+        maximizeButton.setBorder(BorderFactory.createEmptyBorder());
+
+        minimizeButton = new JButton();
+        minimizeButton.setBackground(new Color(50, 50, 47, 255));
+        ImageIcon icon3 = new ImageIcon("img/Minimize Button.jpg");
+        minimizeButton.setIcon(icon3);
+        minimizeButton.setContentAreaFilled(false);
+        minimizeButton.setFocusable(false);
+        minimizeButton.setBorder(BorderFactory.createEmptyBorder());
+        minimizeButton.addActionListener(ae -> setState(ICONIFIED));
+
+        TopButtons = new JPanel();
+        TopButtons.setLayout(new GridLayout(1, 3, 0, 0));
+        TopButtons.setPreferredSize(new Dimension(70, 20));
+        TopButtons.setBackground(new Color(50, 50, 47, 255));
+        TopButtons.setBorder(BorderFactory.createEmptyBorder());
+        TopButtons.add(minimizeButton);
+        TopButtons.add(maximizeButton);
+        TopButtons.add(exitButton);
+
         JPanel topBar = new JPanel();
-        topBar.setLayout(new FlowLayout(FlowLayout.LEFT));
-        topBar.setBackground(new Color(45, 45, 45));
-
-        JLabel title = new JLabel("Dashboard");
-        title.setForeground(Color.WHITE);
-        title.setFont(new Font("Verdana", Font.BOLD, 24));
-
-        topBar.add(title);
-
+        topBar.setPreferredSize(new Dimension(450, 40));
+        topBar.setLayout(new BorderLayout(0, 0));
+        topBar.setBackground(new Color(50, 50, 47, 255));
+        topBar.add(TopButtons, BorderLayout.EAST);
+       
         return topBar;
     }
-
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBackground(new Color(33, 33, 33));
+        sidebar.setBackground(new Color(62,62,62,255));
         sidebar.setPreferredSize(new Dimension(200, getHeight()));
 
         homeButton = createSidebarButton("Home");
@@ -137,14 +170,16 @@ public class CustomerView extends JFrame {
     private JPanel createEventCard(Event event) {
         JPanel eventCard = new JPanel();
         eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
-        eventCard.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        eventCard.setBackground(Color.WHITE);
+        eventCard.setBorder(BorderFactory.createEmptyBorder());
+        eventCard.setBackground(new Color(221, 218, 238));
+        eventCard.setPreferredSize(new Dimension(400, 700)); // Adjust the size as needed
+        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,700)); // Set max height
 
         // Image
         JLabel imageLabel = new JLabel();
         if (event.getImage() != null) {
             ImageIcon imageIcon = new ImageIcon(event.getImage());
-            Image image = imageIcon.getImage().getScaledInstance(200, 150, Image.SCALE_DEFAULT);
+            Image image = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(image);
             imageLabel.setIcon(imageIcon);
         }
@@ -153,26 +188,28 @@ public class CustomerView extends JFrame {
 
         // Title
         JLabel titleLabel = new JLabel(event.getTitle());
-        titleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+        titleLabel.setFont(new Font("Calibri",Font.BOLD, 30));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         eventCard.add(titleLabel);
 
         // Description
         JTextArea descriptionArea = new JTextArea(event.getDescription());
         descriptionArea.setEditable(false);
-        descriptionArea.setLineWrap(true);
-        descriptionArea.setWrapStyleWord(true);
-        descriptionArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        descriptionArea.setFont(new Font("Verdana", Font.ITALIC, 15));
+        descriptionArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        descriptionArea.setBackground(new Color(221, 218, 238));
         JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
-        descriptionScrollPane.setPreferredSize(new Dimension(200, 100));
+        descriptionScrollPane.setPreferredSize(new Dimension(400, 50));
+        descriptionScrollPane.setBackground(new Color(221, 218, 238));
+        descriptionScrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         eventCard.add(descriptionScrollPane);
 
         // Price
-        JLabel priceLabel = new JLabel("Price: $" + event.getPrice());
+        JLabel priceLabel = new JLabel("Price: Ksh" + event.getPrice());
         priceLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
         priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
+        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         eventCard.add(priceLabel);
 
         // Book Button

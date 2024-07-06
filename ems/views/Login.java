@@ -1,24 +1,17 @@
 package ems.views;
 
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.*;
-import javax.swing.border.*;
+import ems.Controller.AuthController;
+import ems.Controller.CustomerController;
+import ems.Controller.OrganizerController;
+import ems.Models.Customer;
+import ems.Models.Organizer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import ems.Controller.AuthController;
-import ems.Controller.CustomerController;
-import ems.views.CustomerView;
-import ems.Controller.OrganizerController;
-import ems.views.OrganizerView;
-
-import ems.Models.Organizer;
-import ems.Models.Customer;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.*;
+import javax.swing.border.*;
 
 public class Login extends JFrame implements ActionListener {
     JPanel Left, Right, TopButtons, Close, RolePanel;
