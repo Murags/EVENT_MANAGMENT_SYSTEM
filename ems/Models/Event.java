@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import ems.Models.Booking;
 import ems.db.DBConnection;
 
 public class Event {
@@ -201,7 +202,7 @@ public class Event {
         return event;
     }
 
-        /**
+    /**
      * Fetches all events
      *
      * @return a list of Event objects
@@ -233,5 +234,38 @@ public class Event {
             e.printStackTrace();
         }
         return events;
+    }
+
+    /**
+     * Fetches all bookings
+     *
+     * @return a list of bookings objects
+     */
+    public List<Booking> allBookings() {
+        List<Booking> bookings = new ArrayList<>();
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "SELECT * FROM bookings WHERE event_id=?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, this.id);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Booking booking = new Booking(
+                    rs.getInt("customer_id"),
+                    rs.getInt("event_id"),
+                    rs.getTimestamp("booking_date")
+                );
+                booking.setId(rs.getInt("id"));
+                bookings.add(booking);
+            }
+            db.closeConnection();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bookings;
     }
 }

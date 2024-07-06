@@ -16,6 +16,7 @@ public class CustomerView extends JFrame {
 
     private Customer customer;
     private JButton homeButton, eventsButton, bookingsButton, profileButton;
+    private JPanel contentPanel;
 
     public CustomerView(Customer customer) {
         this.customer = customer;
@@ -35,8 +36,11 @@ public class CustomerView extends JFrame {
         add(sidebar, BorderLayout.WEST);
 
         // Add main content area
-        JPanel contentArea = createContentArea();
-        add(new JScrollPane(contentArea), BorderLayout.CENTER);
+        contentPanel = new JPanel(new CardLayout());
+        add(contentPanel, BorderLayout.CENTER);
+
+        // Show Events area by default
+        showEventsArea();
     }
 
     private JPanel createTopBar() {
@@ -44,7 +48,7 @@ public class CustomerView extends JFrame {
         topBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         topBar.setBackground(new Color(45, 45, 45));
 
-        JLabel title = new JLabel("Dashboard");
+        JLabel title = new JLabel("Welcome " + this.customer.getFirstName() + " " + this.customer.getLastName());
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Verdana", Font.BOLD, 24));
 
@@ -59,22 +63,31 @@ public class CustomerView extends JFrame {
         sidebar.setBackground(new Color(33, 33, 33));
         sidebar.setPreferredSize(new Dimension(200, getHeight()));
 
-        homeButton = createSidebarButton("Home");
         eventsButton = createSidebarButton("Events");
         bookingsButton = createSidebarButton("Bookings");
         profileButton = createSidebarButton("Profile");
 
         sidebar.add(Box.createVerticalStrut(20));
-        sidebar.add(homeButton);
-        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(eventsButton);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(bookingsButton);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(profileButton);
 
-        // Set "Home" as the active button
-        setActiveButton(homeButton);
+        // Set action listeners
+        eventsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showEventsArea();
+            }
+        });
+
+        bookingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showBookingsArea();
+            }
+        });
 
         return sidebar;
     }
@@ -96,45 +109,58 @@ public class CustomerView extends JFrame {
             new EmptyBorder(5, 15, 5, 15)
         ));
 
-        // Add mouse listener to change active button
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                setActiveButton(button);
-            }
-        });
-
         return button;
     }
 
-    private void setActiveButton(JButton activeButton) {
-        JButton[] buttons = {homeButton, eventsButton, bookingsButton, profileButton};
-
-        for (JButton button : buttons) {
-            if (button == activeButton) {
-                button.setBackground(new Color(77, 77, 77));
-            } else {
-                button.setBackground(new Color(55, 55, 55));
-            }
-        }
-    }
-
-    private JPanel createContentArea() {
-        JPanel contentArea = new JPanel();
-        contentArea.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
-        contentArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        contentArea.setBackground(new Color(240, 240, 240));
+    private void showEventsArea() {
+        JPanel eventsArea = new JPanel();
+        eventsArea.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
+        eventsArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        eventsArea.setBackground(new Color(240, 240, 240));
 
         List<Event> events = EventsController.allEvents();
-        // Add event cards
-        for (Event event : events) {
-            contentArea.add(createEventCard(event));
+        if (events.isEmpty()) {
+            JLabel noEventsLabel = new JLabel("No Events Available");
+            noEventsLabel.setFont(new Font("Verdana", Font.BOLD, 18));
+            noEventsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            eventsArea.add(noEventsLabel);
+        } else {
+            for (Event event : events) {
+                eventsArea.add(createEventCard(event, true));
+            }
         }
 
-        return contentArea;
+        contentPanel.removeAll();
+        contentPanel.add(new JScrollPane(eventsArea));
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
-    // Method to create event card based on Event object
-    private JPanel createEventCard(Event event) {
+    private void showBookingsArea() {
+        JPanel bookingsArea = new JPanel();
+        bookingsArea.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
+        bookingsArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        bookingsArea.setBackground(new Color(240, 240, 240));
+
+        List<Event> myEvents = customer.getEvents();
+        if (myEvents.isEmpty()) {
+            JLabel noBookingsLabel = new JLabel("No Bookings Made");
+            noBookingsLabel.setFont(new Font("Verdana", Font.BOLD, 18));
+            noBookingsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            bookingsArea.add(noBookingsLabel);
+        } else {
+            for (Event event : myEvents) {
+                bookingsArea.add(createEventCard(event, false));
+            }
+        }
+
+        contentPanel.removeAll();
+        contentPanel.add(new JScrollPane(bookingsArea));
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private JPanel createEventCard(Event event, boolean includeBookButton) {
         JPanel eventCard = new JPanel();
         eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
         eventCard.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -175,29 +201,30 @@ public class CustomerView extends JFrame {
         priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
         eventCard.add(priceLabel);
 
-        // Book Button
-        JButton bookButton = new JButton("Book");
-        bookButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        bookButton.setBackground(new Color(0, 123, 255));
-        bookButton.setForeground(Color.WHITE);
-        bookButton.setFocusPainted(false);
-        bookButton.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-        bookButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        bookButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement booking action here
-                boolean success = BookingsController.createBooking(customer, event);
-                if (success) {
-                    JOptionPane.showMessageDialog(null, "Successfully booked event: " + event.getTitle());
-                } else {
-                    JOptionPane.showMessageDialog(null, "Failed to book event: " + event.getTitle());
+        if (includeBookButton) {
+            // Book Button
+            JButton bookButton = new JButton("Book");
+            bookButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            bookButton.setBackground(new Color(0, 123, 255));
+            bookButton.setForeground(Color.WHITE);
+            bookButton.setFocusPainted(false);
+            bookButton.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+            bookButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            bookButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Implement booking action here
+                    boolean success = BookingsController.createBooking(customer, event);
+                    if (success) {
+                        JOptionPane.showMessageDialog(null, "Successfully booked event: " + event.getTitle());
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to book event: " + event.getTitle());
+                    }
                 }
-            }
-        });
-        eventCard.add(bookButton);
+            });
+            eventCard.add(bookButton);
+        }
 
         return eventCard;
     }
-
 }
