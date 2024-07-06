@@ -17,6 +17,8 @@ import java.util.List;
 import ems.Controller.EventsController;
 import ems.Models.Organizer;
 import ems.Models.Event;
+import ems.Models.Booking;
+
 
 public class OrganizerView extends JFrame {
 
@@ -44,15 +46,14 @@ public class OrganizerView extends JFrame {
 
         // Add main content area
         contentArea = new JPanel(new CardLayout());
-        contentArea.add(new JScrollPane(createDashboardPanel()), "Dashboard");
         contentArea.add(new JScrollPane(createEventsPanel()), "Events");
         contentArea.add(new JScrollPane(createBookingsPanel()), "Bookings");
         contentArea.add(new JScrollPane(createSettingsPanel()), "Settings");
         contentArea.add(new JScrollPane(createCreateEventPanel()), "Create Event");
         add(contentArea, BorderLayout.CENTER);
 
-        setActiveButton(dashboardButton); // Set initial active button and content
-        showPanel("Dashboard");
+        setActiveButton(eventsButton); // Set initial active button and content
+        showPanel("Events");
     }
 
     private JPanel createTopBar() {
@@ -60,7 +61,7 @@ public class OrganizerView extends JFrame {
         topBar.setLayout(new FlowLayout(FlowLayout.LEFT));
         topBar.setBackground(new Color(45, 45, 45));
 
-        JLabel title = new JLabel("Event Management Dashboard");
+        JLabel title = new JLabel(this.organizer.getFirstName() + " " +this.organizer.getLastName() + " Event Management Dashboard");
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Verdana", Font.BOLD, 24));
 
@@ -75,14 +76,11 @@ public class OrganizerView extends JFrame {
         sidebar.setBackground(new Color(33, 33, 33));
         sidebar.setPreferredSize(new Dimension(200, getHeight()));
 
-        dashboardButton = createSidebarButton("Dashboard");
         eventsButton = createSidebarButton("Events");
         bookingsButton = createSidebarButton("Bookings");
         createEventButton = createSidebarButton("Create Event");
         settingsButton = createSidebarButton("Settings");
 
-        sidebar.add(Box.createVerticalStrut(20));
-        sidebar.add(dashboardButton);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(eventsButton);
         sidebar.add(Box.createVerticalStrut(10));
@@ -125,7 +123,7 @@ public class OrganizerView extends JFrame {
     }
 
     private void setActiveButton(JButton activeButton) {
-        JButton[] buttons = {dashboardButton, eventsButton, bookingsButton, createEventButton, settingsButton};
+        JButton[] buttons = {eventsButton, bookingsButton, createEventButton, settingsButton};
 
         for (JButton button : buttons) {
             if (button == activeButton) {
@@ -139,13 +137,6 @@ public class OrganizerView extends JFrame {
     private void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (contentArea.getLayout());
         cl.show(contentArea, panelName);
-    }
-
-    private JPanel createDashboardPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(240, 240, 240));
-        panel.add(new JLabel("Welcome to the Dashboard!"));
-        return panel;
     }
 
     private JPanel createEventsPanel() {
@@ -165,10 +156,72 @@ public class OrganizerView extends JFrame {
 
     private JPanel createBookingsPanel() {
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Change to BoxLayout for vertical alignment
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.setBackground(new Color(240, 240, 240));
-        panel.add(new JLabel("Bookings will be shown here."));
+
+        List<Event> events = organizer.getEvents();
+
+        if (events.isEmpty()) {
+            panel.add(new JLabel("No events available."));
+        } else {
+            for (Event event : events) {
+                // Event Title
+                JLabel eventTitleLabel = new JLabel(event.getTitle());
+                eventTitleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+                eventTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                panel.add(eventTitleLabel);
+                panel.add(Box.createVerticalStrut(5));
+
+                List<Booking> bookings = event.allBookings();
+                if (bookings.isEmpty()) {
+                    JLabel noBookingsLabel = new JLabel("No bookings for this event.");
+                    noBookingsLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
+                    noBookingsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    panel.add(noBookingsLabel);
+                } else {
+                    for (Booking booking : bookings) {
+                        panel.add(createBookingCard(booking, event));
+                        panel.add(Box.createVerticalStrut(10)); // Add some space between booking cards
+                    }
+                }
+
+                panel.add(Box.createVerticalStrut(20)); // Add some space between different events
+            }
+        }
+
         return panel;
     }
+
+    private JPanel createBookingCard(Booking booking, Event event) {
+        JPanel bookingCard = new JPanel();
+        bookingCard.setLayout(new BoxLayout(bookingCard, BoxLayout.Y_AXIS));
+        bookingCard.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        bookingCard.setBackground(Color.WHITE);
+        bookingCard.setPreferredSize(new Dimension(300, 150)); // Adjust size as needed
+
+        // Booking details
+        JLabel attendeeNameLabel = new JLabel("Attendee: " + booking.attendeeName());
+        attendeeNameLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+        attendeeNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel bookingDateLabel = new JLabel("Booking Date: " + booking.getBookingDate().toString());
+        bookingDateLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+        bookingDateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel priceLabel = new JLabel("Price: Ksh" + event.getPrice());
+        priceLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Add labels to the card
+        bookingCard.add(attendeeNameLabel);
+        bookingCard.add(bookingDateLabel);
+        bookingCard.add(priceLabel);
+
+        return bookingCard;
+    }
+
+
 
     private JPanel createSettingsPanel() {
         JPanel panel = new JPanel();
@@ -367,7 +420,7 @@ public class OrganizerView extends JFrame {
         eventCard.add(imageLabel);
 
         // Title
-        JLabel titleLabel = new JLabel(event.getTitle());
+        JLabel titleLabel = new JLabel(event.getTitle().toUpperCase());
         titleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
