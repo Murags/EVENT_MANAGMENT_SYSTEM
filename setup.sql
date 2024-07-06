@@ -42,7 +42,5 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   `booking_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE,
-  UNIQUE KEY `unique_booking` (`customer_id`, `event_id`)
+  FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
-

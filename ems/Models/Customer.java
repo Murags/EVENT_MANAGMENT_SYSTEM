@@ -5,9 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import ems.db.DBConnection;
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * Represents a Customer entity with properties and CRUD operations.
@@ -175,54 +172,4 @@ public class Customer {
         }
         return customer;
     }
-
-    /**
-     * Fetches all events booked by this customer.
-     *
-     * @return a list of Event objects booked by this customer
-     */
-    public List<Event> getEvents() {
-        List<Event> events = new ArrayList<>();
-        Connection con = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            DBConnection db = new DBConnection();
-            con = db.getConnection();
-
-            String query = "SELECT e.id, e.organizer_id, e.title, e.description, e.price, e.image " +
-                        "FROM bookings b " +
-                        "JOIN events e ON b.event_id = e.id " +
-                        "WHERE b.customer_id = ?";
-            ps = con.prepareStatement(query);
-            ps.setInt(1, this.id);
-
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Event event = new Event(
-                    rs.getInt("organizer_id"),
-                    rs.getString("title"),
-                    rs.getString("description"),
-                    rs.getDouble("price"),
-                    rs.getString("image")
-                );
-                event.setId(rs.getInt("id"));
-                events.add(event);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (con != null) con.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return events;
-    }
-
 }
