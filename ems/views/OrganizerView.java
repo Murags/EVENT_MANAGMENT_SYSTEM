@@ -253,7 +253,7 @@ public class OrganizerView extends JFrame {
                 String newName = nameField.getText();
                 String newEmail = emailField.getText();
                 String newPassword = passField.getText();
-              
+              organizer.setFirstName(newName);
                 //code to update the database or model here
 
                  try{
