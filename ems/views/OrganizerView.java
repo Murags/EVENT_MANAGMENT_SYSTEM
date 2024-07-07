@@ -129,6 +129,7 @@ public class OrganizerView extends JFrame {
             showPanel(text);
             if (text.equals("SignOut")) {
                 dispose(); // Close the current Organizer dashboard window
+                //The below statement makes use of the threads concept
                 SwingUtilities.invokeLater(() ->  new Login().setVisible(true)
                 );
             }
@@ -253,74 +254,16 @@ public class OrganizerView extends JFrame {
                 String newName = nameField.getText();
                 String newEmail = emailField.getText();
                 String newPassword = passField.getText();
-              organizer.setFirstName(newName);
-                //code to update the database or model here
-
-                 try{
-                        DBConnection db = new DBConnection();
-                        Connection con = db.getConnection();
-
-                        String query = "UPDATE organizers SET First_Name = ? , email = ? , password = ? WHERE id = ?";
-                        
-                        PreparedStatement ps = con.prepareStatement(query);
-                        ps.setString(1,newName);
-                        ps.setString(2,newEmail);
-                        ps.setString(3,newPassword);
-                        ps.setInt(4,organizer.getId());
-                        
-                        int rowsAffectected = ps.executeUpdate();
-                        if(rowsAffectected > 0){
-                            organizer.setFirstName(newName);
-                            organizer.setEmail(newEmail);
-                            organizer.setPassword(newPassword);
-                            JOptionPane.showMessageDialog(panel, "Organizer details updated successfully!");
-                            dispose();
-                            new Login().setVisible(true);
-                        }
-                        else{
-                            JOptionPane.showMessageDialog(panel, "Organizer details update failed. Please Try Again!");
-                        }
-                    }catch(SQLException | ClassNotFoundException em){
-                    em.printStackTrace();
-                    JOptionPane.showMessageDialog(panel, "Database Connection erro"+em.getMessage());
-                } 
-                
+                organizer.updateOrganizer(newName, newEmail, newPassword, OrganizerView.this); // Pass the frame reference
             }
         });
-
+        
         // Action listener for delete button
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Perform the delete operation
-                // code to delete the organizer from the database or model here
-
-                int confirmation = JOptionPane.showConfirmDialog(panel, "Are you sure you want to delete this organizer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-                if(confirmation == JOptionPane.YES_OPTION){
-                      try{
-                            DBConnection db = new DBConnection();
-                            Connection con = db.getConnection();
-
-                            String query = "DELETE FROM organizers WHERE id = ?";
-                            PreparedStatement pmt = con.prepareStatement(query);
-                            pmt.setInt(1, organizer.getId());
-                            int rowsAffectected = pmt.executeUpdate();
-
-                            if(rowsAffectected > 0){
-                                JOptionPane.showMessageDialog(panel, "Organizer deleted successfully!");
-                                dispose();
-                                new Login().setVisible(true);
-                            }
-                            else{
-                                JOptionPane.showMessageDialog(panel, "Organizer deletetion failed. Please Try Again!");
-
-                            }
-                      }catch(ClassNotFoundException | SQLException emp){
-                          emp.printStackTrace();
-                      }
-                }
-                // Redirect to login screen or close the application
-                
+                organizer.deleteOrganizer(OrganizerView.this);
             }
         });
 
