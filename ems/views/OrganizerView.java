@@ -31,7 +31,7 @@ public class OrganizerView extends JFrame {
         System.out.println(organizer.getEmail());
         // Set up the main frame
         setTitle("Event Management Dashboard");
-        setSize(1490, 880);
+        setSize(1100, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(true);
@@ -103,7 +103,7 @@ public class OrganizerView extends JFrame {
         topBar.setLayout(new BorderLayout(0, 0));
         topBar.setBackground(new Color(50, 50, 47, 255));
         topBar.add(TopButtons, BorderLayout.EAST);
-       
+
         return topBar;
     }
 
@@ -182,7 +182,7 @@ public class OrganizerView extends JFrame {
     private JPanel createEventsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
-        panel.setBorder(BorderFactory.createEmptyBorder(50,10, 100, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20,20, 20, 20));
         panel.setBackground(new Color(221, 218, 238));
 
         List<Event> events = organizer.getEvents();
@@ -196,8 +196,40 @@ public class OrganizerView extends JFrame {
 
     private JPanel createBookingsPanel() {
         JPanel panel = new JPanel();
-        panel.setBackground(new Color(221, 218, 238));
-        panel.add(new JLabel("Bookings will be shown here."));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Change to BoxLayout for vertical alignment
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBackground(new Color(240, 240, 240));
+
+        List<Event> events = organizer.getEvents();
+
+        if (events.isEmpty()) {
+            panel.add(new JLabel("No events available."));
+        } else {
+            for (Event event : events) {
+                // Event Title
+                JLabel eventTitleLabel = new JLabel(event.getTitle());
+                eventTitleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+                eventTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                panel.add(eventTitleLabel);
+                panel.add(Box.createVerticalStrut(5));
+
+                List<Booking> bookings = event.allBookings();
+                if (bookings.isEmpty()) {
+                    JLabel noBookingsLabel = new JLabel("No bookings for this event.");
+                    noBookingsLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
+                    noBookingsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    panel.add(noBookingsLabel);
+                } else {
+                    for (Booking booking : bookings) {
+                        panel.add(createBookingCard(booking, event));
+                        panel.add(Box.createVerticalStrut(10)); // Add some space between booking cards
+                    }
+                }
+
+                panel.add(Box.createVerticalStrut(20)); // Add some space between different events
+            }
+        }
+
         return panel;
     }
 
@@ -231,6 +263,7 @@ public class OrganizerView extends JFrame {
 
 
 
+
     private JPanel createSettingsPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(new Color(221, 218, 238));
@@ -255,10 +288,10 @@ public class OrganizerView extends JFrame {
             g2d.dispose();
             }
         };
-        
+
         panel.setLayout(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-    
+
         // Form components setup
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -266,31 +299,31 @@ public class OrganizerView extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-    
+
         JLabel titleLabel = new JLabel("Create New Event");
         titleLabel.setFont(new Font("Open Sans", Font.BOLD, 24));
         titleLabel.setForeground(new Color (7,106,171,255));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
         panel.add(titleLabel, gbc);
-    
-        
+
+
         JLabel title = new JLabel("Title :");
         title.setFont(new Font("Verdana",Font.ITALIC,16));
         title.setForeground((new Color(7,106,171,255)));
-        //title.setHorizontalAlignment(JLabel.LEFT); 
+        //title.setHorizontalAlignment(JLabel.LEFT);
         gbc.gridwidth = 1;
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(title, gbc);
-    
+
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
         JTextField titleField = new JTextField(20);
         titleField.setBorder(BorderFactory.createLineBorder((new Color(57,57,57,255)),1));
         panel.add(titleField, gbc);
-    
-        
+
+
         JLabel description = new JLabel("Description :");
         description.setFont(new Font("Verdana",Font.ITALIC,16));
         description.setForeground((new Color (7,106,171,255)));
@@ -298,7 +331,7 @@ public class OrganizerView extends JFrame {
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(description, gbc);
-    
+
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
         JTextArea descriptionArea = new JTextArea(5, 20);
@@ -308,7 +341,7 @@ public class OrganizerView extends JFrame {
         JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea); // Wrap JTextArea in JScrollPane
         descriptionScrollPane.setBorder(BorderFactory.createEmptyBorder());
         panel.add(descriptionScrollPane, gbc);
-    
+
         JLabel price = new JLabel("Price:");
         price.setFont(new Font("Verdana",Font.ITALIC,16));
         price.setForeground((new Color (7,106,171,255)));
@@ -316,13 +349,13 @@ public class OrganizerView extends JFrame {
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(price, gbc);
-    
+
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
         JTextField priceField = new JTextField(20);
         priceField.setBorder(BorderFactory.createLineBorder((new Color(57,57,57,255)),1));
         panel.add(priceField, gbc);
-    
+
         JLabel image = new JLabel("Image :");
         image.setFont(new Font("Verdana",Font.ITALIC,16));
         image.setForeground((new Color (7,106,171,255)));
@@ -330,7 +363,7 @@ public class OrganizerView extends JFrame {
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(image, gbc);
-    
+
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
         JPanel imagePanel = new JPanel(new BorderLayout());
@@ -366,10 +399,10 @@ public class OrganizerView extends JFrame {
                 }
             }
         });
-    
+
         imagePanel.add(uploadImageButton, BorderLayout.EAST);
         panel.add(imagePanel, gbc);
-    
+
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -378,9 +411,9 @@ public class OrganizerView extends JFrame {
         createEventButton.setBackground(new Color (7,106,171,255));
         createEventButton.setFocusable(false);
       //  createEventButton.setContentAreaFilled(false);
-        
+
         panel.add(createEventButton, gbc);
-    
+
         createEventButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -389,31 +422,31 @@ public class OrganizerView extends JFrame {
                 String description = descriptionArea.getText();
                 String priceText = priceField.getText();
                 double price = 0.0;
-    
+
                 try {
                     price = Double.parseDouble(priceText);
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Please enter a valid price.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-    
+
                 // Perform validation
                 if (title.isEmpty() || description.isEmpty() || priceText.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-    
+
                 // Handle image upload
                 String imagePath = imageLabel.getText();
                 if (imageLabel.getText().equals("No file chosen")) {
                     JOptionPane.showMessageDialog(null, "Please upload an image.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-    
+
                 // Assuming organizer.getId() is your organizer ID retrieval logic
                 int organizer_id = organizer.getId();
                 boolean success = EventsController.createEvent(organizer_id, title, description, price, imagePath);
-    
+
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Event created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     // Reset fields
@@ -421,7 +454,7 @@ public class OrganizerView extends JFrame {
                     descriptionArea.setText("");
                     priceField.setText("");
                     imageLabel.setText("No file chosen");
-    
+
                     // Optionally refresh events panel or navigate to another view
                     refreshEventsPanel();
                     showPanel("Events"); // Example method to switch to events view
@@ -435,18 +468,18 @@ public class OrganizerView extends JFrame {
                 }
             }
         });
-    
+
         // Set the preferred size of the panel (adjust as needed)
         panel.setPreferredSize(new Dimension(800, 600));
-    
+
         // Wrap the panel in a JScrollPane to make it scrollable
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    
+
         return panel; // Return the JScrollPane instead of the JPanel
     }
-    
+
 
     private void refreshEventsPanel() {
         JPanel newEventsPanel = createEventsPanel(); // Create a new panel with updated events
@@ -460,14 +493,14 @@ public class OrganizerView extends JFrame {
         eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
         eventCard.setBorder(BorderFactory.createEmptyBorder());
         eventCard.setBackground(new Color(221, 218, 238));
-        eventCard.setPreferredSize(new Dimension(400, 700)); // Adjust the size as needed
-        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,700)); // Set max height
+        eventCard.setPreferredSize(new Dimension(250, 410)); // Adjust the size as needed
+        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,400)); // Set max height
 
         // Image
         JLabel imageLabel = new JLabel();
         if (event.getImage() != null) {
             ImageIcon imageIcon = new ImageIcon(event.getImage());
-            Image image = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT);
+            Image image = imageIcon.getImage().getScaledInstance(350, 270, Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(image);
             imageLabel.setIcon(imageIcon);
         }
@@ -508,7 +541,7 @@ public class OrganizerView extends JFrame {
         buttonPanel.setMaximumSize(new Dimension(400,50));
         buttonPanel.setMinimumSize(new Dimension(400,50));
         buttonPanel.setBackground(new Color(221, 218, 238));
-        
+
 
         // Update Button
         JButton updateButton = new JButton("Update");
