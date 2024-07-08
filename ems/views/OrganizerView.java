@@ -186,9 +186,13 @@ public class OrganizerView extends JFrame {
         panel.setBackground(new Color(221, 218, 238));
 
         List<Event> events = organizer.getEvents();
-        // Add event cards
-        for (Event event : events) {
-            panel.add(createEventCard(event));
+        if (events.isEmpty()) {
+            panel.add(new JLabel("No Events available."));
+        } else{
+            // Add event cards
+            for (Event event : events) {
+                panel.add(createEventCard(event));
+            }
         }
 
         return panel;
@@ -203,7 +207,7 @@ public class OrganizerView extends JFrame {
         List<Event> events = organizer.getEvents();
 
         if (events.isEmpty()) {
-            panel.add(new JLabel("No events available."));
+            panel.add(new JLabel("No Bookings available."));
         } else {
             for (Event event : events) {
                 // Event Title
@@ -265,9 +269,82 @@ public class OrganizerView extends JFrame {
 
 
     private JPanel createSettingsPanel() {
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(221, 218, 238));
-        panel.add(new JLabel("Settings will be configured here."));
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(240, 240, 240));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Labels and text fields for organizer information
+        JLabel nameLabel = new JLabel("Name:");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(nameLabel, gbc);
+
+        JTextField nameField = new JTextField(organizer.getFirstName(), 20);
+        gbc.gridx = 1;
+        panel.add(nameField, gbc);
+
+        JLabel emailLabel = new JLabel("Email:");
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(emailLabel, gbc);
+
+        JTextField emailField = new JTextField(organizer.getEmail(), 20);
+        gbc.gridx = 1;
+        panel.add(emailField, gbc);
+
+        JLabel passLabel = new JLabel("Password:");
+        gbc.gridx = 0;
+        gbc.gridy = -1;
+        panel.add(passLabel, gbc);
+
+        JTextField passField = new JTextField(organizer.getPassword(),20);
+        gbc.gridx = 1;
+        panel.add(passField, gbc);
+        // Add more fields if needed
+        // Update button
+        JButton updateButton = new JButton("Update");
+        gbc.gridx = 0;
+        gbc.gridy = -2;
+        gbc.gridwidth = 1;
+        updateButton.setMaximumSize(new Dimension(180, 40));
+        updateButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        updateButton.setBackground(new Color(55, 55, 55));
+        updateButton.setForeground(Color.WHITE);
+        panel.add(updateButton, gbc);
+
+        // Delete button
+        JButton deleteButton = new JButton("Delete");
+        gbc.gridx = 1;
+        gbc.gridy = -2;
+        deleteButton.setMaximumSize(new Dimension(180, 40));
+        deleteButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        deleteButton.setBackground(new Color(55, 55, 55));
+        deleteButton.setForeground(Color.WHITE);
+        panel.add(deleteButton, gbc);
+
+        // Action listener for update button
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the organizer's details
+                String newName = nameField.getText();
+                String newEmail = emailField.getText();
+                String newPassword = passField.getText();
+                organizer.updateOrganizer(newName, newEmail, newPassword, OrganizerView.this); // Pass the frame reference
+            }
+        });
+
+        // Action listener for delete button
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Perform the delete operation
+                organizer.deleteOrganizer(OrganizerView.this);
+            }
+        });
+
         return panel;
     }
 

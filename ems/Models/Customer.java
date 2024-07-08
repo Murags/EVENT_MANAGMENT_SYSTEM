@@ -1,12 +1,24 @@
 package ems.Models;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+
+
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import ems.db.DBConnection;
 import java.util.ArrayList;
 import java.util.List;
+
+
+import ems.views.CustomerView;
+import ems.views.Login;
 
 
 /**
@@ -224,5 +236,69 @@ public class Customer {
         }
         return events;
     }
+    //The below method is called in the CustomerView when the update button is clicked to update customer details
+    public void updateCustomer(String newName, String newEmail, String newPassword, JFrame cusomterViewFrame){
 
+        try{
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "UPDATE customers SET First_Name = ? , email = ? , password = ? WHERE id = ?";
+
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, newName);
+            ps.setString(2, newEmail);
+            ps.setString(3, newPassword);
+            ps.setInt(4, getId());
+
+            int rowsAffected = ps.executeUpdate();
+            if(rowsAffected > 0){
+                setFirstName(newName);
+                setEmail(newEmail);
+                setPassword(newPassword);
+                JPanel panel = new JPanel();
+                JOptionPane.showMessageDialog(panel, "User details updated successfully!");
+                cusomterViewFrame.dispose();
+                new Login().setVisible(true);
+            } else {
+                JPanel panel = new JPanel();
+                JOptionPane.showMessageDialog(panel, "User details update failed. Please try again!");
+            }
+         }catch(SQLException | ClassNotFoundException em){
+            em.printStackTrace();
+            JPanel panel = new JPanel();
+            JOptionPane.showMessageDialog(panel, "Database Connection error: " + em.getMessage());
+        }
+
+    }
+
+    //The below method is called in the CustomerView when the delete button is clicked to delete cusomter details
+    public void deleteCustomer(JFrame customerViewFrame) {
+
+    JPanel panel = new JPanel();
+    int confirmation = JOptionPane.showConfirmDialog(panel, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            if(confirmation == JOptionPane.YES_OPTION){
+                try{
+                        DBConnection db = new DBConnection();
+                        Connection con = db.getConnection();
+
+                        String query = "DELETE FROM customers WHERE id = ?";
+                        PreparedStatement pmt = con.prepareStatement(query);
+                        pmt.setInt(1, getId());
+                        int rowsAffectected = pmt.executeUpdate();
+
+                        if(rowsAffectected > 0){
+                            JOptionPane.showMessageDialog(panel, "Userr deleted successfully!");
+                            customerViewFrame.dispose();
+                            new Login().setVisible(true);
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(panel, "User deletetion failed. Please Try Again!");
+
+                        }
+                }catch(ClassNotFoundException | SQLException emp){
+                    emp.printStackTrace();
+                }
+            }
+    }
 }

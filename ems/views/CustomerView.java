@@ -14,7 +14,7 @@ import javax.swing.border.*;
 public class CustomerView extends JFrame {
 
     private Customer customer;
-    private JButton homeButton, eventsButton, bookingsButton, profileButton, exitButton, minimizeButton,maximizeButton ;
+    private JButton eventsButton, bookingsButton, settingsButton, exitButton, minimizeButton,maximizeButton ;
     private JPanel TopButtons;
     private JPanel contentPanel;
 
@@ -100,14 +100,14 @@ public class CustomerView extends JFrame {
 
         eventsButton = createSidebarButton("Events");
         bookingsButton = createSidebarButton("Bookings");
-        profileButton = createSidebarButton("Profile");
+        settingsButton = createSidebarButton("Settings");
 
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(eventsButton);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(bookingsButton);
         sidebar.add(Box.createVerticalStrut(10));
-        sidebar.add(profileButton);
+        sidebar.add(settingsButton);
 
         // Set action listeners
         eventsButton.addActionListener(new ActionListener() {
@@ -121,6 +121,13 @@ public class CustomerView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showBookingsArea();
+            }
+        });
+
+        settingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showSettingsArea();
             }
         });
 
@@ -156,7 +163,7 @@ public class CustomerView extends JFrame {
     }
 
     private void setActiveButton(JButton activeButton) {
-        JButton[] buttons = {eventsButton, bookingsButton, profileButton};
+        JButton[] buttons = {eventsButton, bookingsButton, settingsButton};
 
         for (JButton button : buttons) {
             if (button == activeButton) {
@@ -214,6 +221,90 @@ public class CustomerView extends JFrame {
         contentPanel.revalidate();
         contentPanel.repaint();
     }
+
+    private void showSettingsArea() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(240, 240, 240));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Labels and text fields for customer information
+        JLabel nameLabel = new JLabel("Name:");
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        panel.add(nameLabel, gbc);
+
+        JTextField nameField = new JTextField(customer.getFirstName(), 20);
+        gbc.gridx = 5;
+        panel.add(nameField, gbc);
+
+        JLabel emailLabel = new JLabel("Email:");
+        gbc.gridx = 3;
+        gbc.gridy = 1;
+        panel.add(emailLabel, gbc);
+
+        JTextField emailField = new JTextField(customer.getEmail(), 20);
+        gbc.gridx = 5;
+        panel.add(emailField, gbc);
+
+        JLabel passLabel = new JLabel("Password:");
+        gbc.gridx = 3;
+        gbc.gridy = 2;
+        panel.add(passLabel, gbc);
+
+        JTextField passField = new JTextField(customer.getPassword(), 20);
+        gbc.gridx = 5;
+        panel.add(passField, gbc);
+
+        // Update button
+        JButton updateButton = new JButton("Update");
+        gbc.gridx = 4;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        updateButton.setMaximumSize(new Dimension(180, 40));
+        updateButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        updateButton.setBackground(new Color(55, 55, 55));
+        updateButton.setForeground(Color.WHITE);
+        panel.add(updateButton, gbc);
+
+        // Delete button
+        JButton deleteButton = new JButton("Delete");
+        gbc.gridx = 6;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        deleteButton.setMaximumSize(new Dimension(180, 40));
+        deleteButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+        deleteButton.setBackground(new Color(55, 55, 55));
+        deleteButton.setForeground(Color.WHITE);
+        panel.add(deleteButton, gbc);
+
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the organizer's details
+                String newName = nameField.getText();
+                String newEmail = emailField.getText();
+                String newPassword = passField.getText();
+                customer.updateCustomer(newName , newEmail , newPassword , CustomerView.this);
+
+            }
+        });
+
+        // Action listener for delete button
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Perform the delete operation
+                customer.deleteCustomer(CustomerView.this);
+            }
+        });
+        contentPanel.removeAll();
+        contentPanel.add(new JScrollPane(panel));
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
 
     // Method to create event card based on Event object
     private JPanel createEventCard(Event event, boolean includeBookButton) {

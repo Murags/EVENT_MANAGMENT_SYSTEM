@@ -1,13 +1,18 @@
 package ems.Models;
 
+import javax.swing.*;
+
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import ems.db.DBConnection; // Import the DBConnection class
 import ems.Models.Event; // Import the Event class
+
+import ems.views.Login;
 
 /**
  * Represents an Organizer entity with properties and CRUD operations.
@@ -209,4 +214,67 @@ public class Organizer {
         }
         return events;
     }
+
+     //Updating the Organizer details
+    public void updateOrganizer(String newName, String newEmail, String newPassword, JFrame organizerViewFrame) {
+        try {
+            DBConnection db = new DBConnection();
+            Connection con = db.getConnection();
+
+            String query = "UPDATE organizers SET First_Name = ?, email = ?, password = ? WHERE id = ?";
+
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, newName);
+            ps.setString(2, newEmail);
+            ps.setString(3, newPassword);
+            ps.setInt(4, getId());
+
+            int rowsAffected = ps.executeUpdate();
+            JPanel panel = new JPanel();
+            if (rowsAffected > 0) {
+                setFirstName(newName);
+                setEmail(newEmail);
+                setPassword(newPassword);
+                JOptionPane.showMessageDialog(panel, "Organizer details updated successfully!");
+                organizerViewFrame.dispose();  // Close the OrganizerView frame
+                new Login().setVisible(true);  // Show the login frame
+            } else {
+                JOptionPane.showMessageDialog(panel, "Organizer details update failed. Please try again!");
+            }
+        } catch (SQLException | ClassNotFoundException em) {
+            em.printStackTrace();
+            JPanel panel = new JPanel();
+            JOptionPane.showMessageDialog(panel, "Database Connection error: " + em.getMessage());
+        }
+    }
+
+    //Deleting Method  for deleting organizer data
+    public void deleteOrganizer(JFrame organizerViewFrame){
+        JPanel panel = new JPanel();
+        int confirmation = JOptionPane.showConfirmDialog(panel, "Are you sure you want to delete this organizer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                    if(confirmation == JOptionPane.YES_OPTION){
+                        try{
+                                DBConnection db = new DBConnection();
+                                Connection con = db.getConnection();
+
+                                String query = "DELETE FROM organizers WHERE id = ?";
+                                PreparedStatement pmt = con.prepareStatement(query);
+                                pmt.setInt(1, getId());
+                                int rowsAffectected = pmt.executeUpdate();
+
+                                if(rowsAffectected > 0){
+                                    JOptionPane.showMessageDialog(panel, "Organizer deleted successfully!");
+                                    organizerViewFrame.dispose();
+                                    new Login().setVisible(true);
+                                }
+                                else{
+                                    JOptionPane.showMessageDialog(panel, "Organizer deletetion failed. Please Try Again!");
+
+                                }
+                        }catch(ClassNotFoundException | SQLException emp){
+                            emp.printStackTrace();
+                        }
+                    }
+    }
+
 }
