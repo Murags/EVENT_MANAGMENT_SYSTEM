@@ -22,7 +22,7 @@ public class CustomerView extends JFrame {
         this.customer = customer;
         // Set up the main frame
         setTitle("Event Management Dashboard");
-        setSize(1100, 650);
+        setSize(1490, 880);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setUndecorated(true);
@@ -45,6 +45,7 @@ public class CustomerView extends JFrame {
         showEventsArea();
     }
 
+    //Creation of the TopBar
     private JPanel createTopBar() {
         exitButton = new JButton();
         ImageIcon icon = new ImageIcon("img/RED BUTTON.jpg");
@@ -92,6 +93,7 @@ public class CustomerView extends JFrame {
         return topBar;
     }
 
+   // Creation of the SidePanel
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
@@ -102,6 +104,8 @@ public class CustomerView extends JFrame {
         bookingsButton = createSidebarButton("Bookings");
         settingsButton = createSidebarButton("Settings");
 
+        
+        
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(eventsButton);
         sidebar.add(Box.createVerticalStrut(10));
@@ -135,6 +139,7 @@ public class CustomerView extends JFrame {
     }
 
 
+//Creation of the 
     private JButton createSidebarButton(String text) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -177,7 +182,7 @@ public class CustomerView extends JFrame {
     private void showEventsArea() {
         JPanel eventsArea = new JPanel();
         eventsArea.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
-        eventsArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        eventsArea.setBorder(BorderFactory.createEmptyBorder(50, 10, 100, 10));
         eventsArea.setBackground(new Color(221, 218, 238));
 
         List<Event> events = EventsController.allEvents();
@@ -199,7 +204,7 @@ public class CustomerView extends JFrame {
     }
 
     private void showBookingsArea() {
-        JPanel bookingsArea = new JPanel();
+        JPanel bookingsArea = new JPanel(){};
         bookingsArea.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
         bookingsArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         bookingsArea.setBackground(new Color(221, 218, 238));
@@ -223,7 +228,21 @@ public class CustomerView extends JFrame {
     }
 
     private void showSettingsArea() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout()){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Load and draw the background image
+                ImageIcon backgroundImage = new ImageIcon("img/bg.png");
+                // Adjust transparency
+            Graphics2D g2d = (Graphics2D) g.create();
+            float alpha = 0.1f; // 0.0f is fully transparent, 1.0f is fully opaque
+            g2d.setComposite(AlphaComposite.SrcOver.derive(alpha));
+            g2d.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+
+            g2d.dispose();
+            }
+        };
         panel.setBackground(new Color(240, 240, 240));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -231,6 +250,7 @@ public class CustomerView extends JFrame {
 
         // Labels and text fields for customer information
         JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setForeground(new Color (7,106,171,255));
         gbc.gridx = 3;
         gbc.gridy = 0;
         panel.add(nameLabel, gbc);
@@ -240,6 +260,7 @@ public class CustomerView extends JFrame {
         panel.add(nameField, gbc);
 
         JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setForeground(new Color (7,106,171,255));
         gbc.gridx = 3;
         gbc.gridy = 1;
         panel.add(emailLabel, gbc);
@@ -249,6 +270,7 @@ public class CustomerView extends JFrame {
         panel.add(emailField, gbc);
 
         JLabel passLabel = new JLabel("Password:");
+        passLabel.setForeground(new Color (7,106,171,255));
         gbc.gridx = 3;
         gbc.gridy = 2;
         panel.add(passLabel, gbc);
@@ -264,8 +286,8 @@ public class CustomerView extends JFrame {
         gbc.gridwidth = 2;
         updateButton.setMaximumSize(new Dimension(180, 40));
         updateButton.setFont(new Font("Verdana", Font.PLAIN, 16));
-        updateButton.setBackground(new Color(55, 55, 55));
-        updateButton.setForeground(Color.WHITE);
+        updateButton.setBackground(new Color (7,106,171,255));
+        updateButton.setForeground(Color.BLACK);
         panel.add(updateButton, gbc);
 
         // Delete button
@@ -275,8 +297,8 @@ public class CustomerView extends JFrame {
         gbc.gridwidth = 2;
         deleteButton.setMaximumSize(new Dimension(180, 40));
         deleteButton.setFont(new Font("Verdana", Font.PLAIN, 16));
-        deleteButton.setBackground(new Color(55, 55, 55));
-        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setBackground(new Color (7,106,171,255));
+        deleteButton.setForeground(Color.BLACK);
         panel.add(deleteButton, gbc);
 
         updateButton.addActionListener(new ActionListener() {
@@ -308,18 +330,18 @@ public class CustomerView extends JFrame {
 
     // Method to create event card based on Event object
     private JPanel createEventCard(Event event, boolean includeBookButton) {
-        JPanel eventCard = new JPanel();
+        JPanel eventCard = new JPanel(){};
         eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
         eventCard.setBorder(BorderFactory.createEmptyBorder());
         eventCard.setBackground(new Color(221, 218, 238));
-        eventCard.setPreferredSize(new Dimension(260, 410)); // Adjust the size as needed
-        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,400)); // Set max height
+        eventCard.setPreferredSize(new Dimension(400, 700)); // Adjust the size as needed
+        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,700)); // Set max height
 
         // Image
         JLabel imageLabel = new JLabel();
         if (event.getImage() != null) {
             ImageIcon imageIcon = new ImageIcon(event.getImage());
-            Image image = imageIcon.getImage().getScaledInstance(390, 270, Image.SCALE_DEFAULT);
+            Image image = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(image);
             imageLabel.setIcon(imageIcon);
         }
