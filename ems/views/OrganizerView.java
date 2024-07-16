@@ -5,8 +5,11 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,13 +28,15 @@ public class OrganizerView extends JFrame {
     private JButton  eventsButton, bookingsButton, createEventButton, settingsButton, exitButton, minimizeButton, maximizeButton;
     private JPanel contentArea,TopButtons;
     private Organizer organizer;
+    private boolean isMaximized = false;//A boolean variable to initially set the size of the JFrame to normal size
+    private Point initialClick;//For moving the application using the mouse
 
     public OrganizerView(Organizer organizer) {
         this.organizer = organizer;
         System.out.println(organizer.getEmail());
         // Set up the main frame
         setTitle("Event Management Dashboard");
-        setSize(1490, 880);
+        setSize(1100, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(true);
@@ -79,6 +84,17 @@ public class OrganizerView extends JFrame {
         maximizeButton.setIcon(icon1);
         maximizeButton.setFocusable(false);
         maximizeButton.setBorder(BorderFactory.createEmptyBorder());
+        maximizeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (isMaximized) {
+                    setExtendedState(JFrame.NORMAL);
+                } else {
+                    setExtendedState(JFrame.MAXIMIZED_BOTH);
+                }
+                isMaximized = !isMaximized;
+            }
+        });
 
         minimizeButton = new JButton();
         minimizeButton.setBackground(new Color(50, 50, 47, 255));
@@ -104,6 +120,34 @@ public class OrganizerView extends JFrame {
         topBar.setBackground(new Color(50, 50, 47, 255));
         topBar.add(TopButtons, BorderLayout.EAST);
 
+        // Add mouse listener for dragging the frame
+                topBar.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        initialClick = e.getPoint();
+                        getComponentAt(initialClick);
+                    }
+                });
+
+        topBar.addMouseMotionListener(new MouseAdapter() {
+            @Override
+                public void mouseDragged(MouseEvent e) {
+                        // Get location of the window
+                        int thisX = getLocation().x;
+                        int thisY = getLocation().y;
+        
+                        // Determine how much the mouse moved since the initial click
+                        int xMoved = e.getX() - initialClick.x;
+                        int yMoved = e.getY() - initialClick.y;
+        
+                        // Move the frame by the mouse delta
+                        int newX = thisX + xMoved;
+                        int newY = thisY + yMoved;
+                        setLocation(newX, newY);
+                    }
+                });
+        
+
         return topBar;
     }
 
@@ -113,14 +157,12 @@ public class OrganizerView extends JFrame {
         sidebar.setBackground(new Color(62,62,62,255));
         sidebar.setPreferredSize(new Dimension(200, getHeight()));
 
-       // dashboardButton = createSidebarButton("Dashboard");
         eventsButton = createSidebarButton("Events");
         bookingsButton = createSidebarButton("Bookings");
         createEventButton = createSidebarButton("Create Event");
         settingsButton = createSidebarButton("Settings");
 
-       //sidebar.add(Box.createVerticalStrut(20));
-       //sidebar.add(dashboardButton);
+      
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(eventsButton);
         sidebar.add(Box.createVerticalStrut(10));
@@ -196,7 +238,7 @@ public class OrganizerView extends JFrame {
             }
         };
         panel.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
-        panel.setBorder(BorderFactory.createEmptyBorder(50,10, 100, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20,10, 20, 20));
         panel.setBackground(new Color(221, 218, 238));
 
         List<Event> events = organizer.getEvents();
@@ -229,7 +271,7 @@ public class OrganizerView extends JFrame {
             }
         };
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Change to BoxLayout for vertical alignment
-        panel.setBorder(BorderFactory.createEmptyBorder(50, 10, 100, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.setBackground(new Color(240, 240, 240));
 
         List<Event> events = organizer.getEvents();
@@ -271,7 +313,7 @@ public class OrganizerView extends JFrame {
         bookingCard.setLayout(new BoxLayout(bookingCard, BoxLayout.Y_AXIS));
         bookingCard.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
         bookingCard.setBackground(Color.WHITE);
-        bookingCard.setPreferredSize(new Dimension(400, 700)); // Adjust size as needed
+        bookingCard.setPreferredSize(new Dimension(300, 150)); // Adjust size as needed
 
         // Booking details
         JLabel attendeeNameLabel = new JLabel("Attendee: " + booking.attendeeName());
@@ -623,14 +665,14 @@ public class OrganizerView extends JFrame {
         eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
         eventCard.setBorder(BorderFactory.createEmptyBorder());
         eventCard.setBackground(new Color(221, 218, 238));
-        eventCard.setPreferredSize(new Dimension(400, 700)); // Adjust the size as needed
-        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,700)); // Set max height
+        eventCard.setPreferredSize(new Dimension(250, 410)); // Adjust the size as needed
+        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,400)); // Set max height
 
         // Image
         JLabel imageLabel = new JLabel();
         if (event.getImage() != null) {
             ImageIcon imageIcon = new ImageIcon(event.getImage());
-            Image image = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT);
+            Image image = imageIcon.getImage().getScaledInstance(350, 270, Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(image);
             imageLabel.setIcon(imageIcon);
         }
