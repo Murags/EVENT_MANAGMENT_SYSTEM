@@ -7,9 +7,12 @@ import ems.Models.Event;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.*;
+
 
 public class CustomerView extends JFrame {
 
@@ -17,12 +20,14 @@ public class CustomerView extends JFrame {
     private JButton eventsButton, bookingsButton, settingsButton, exitButton, minimizeButton,maximizeButton ;
     private JPanel TopButtons;
     private JPanel contentPanel;
+    private boolean isMaximized = false;
+    private Point initialClick;//For moving the application using the mouse
 
     public CustomerView(Customer customer) {
         this.customer = customer;
         // Set up the main frame
         setTitle("Event Management Dashboard");
-        setSize(1490, 880);
+        setSize(1100, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setUndecorated(true);
@@ -64,6 +69,17 @@ public class CustomerView extends JFrame {
         maximizeButton.setIcon(icon1);
         maximizeButton.setFocusable(false);
         maximizeButton.setBorder(BorderFactory.createEmptyBorder());
+        maximizeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (isMaximized) {
+                    setExtendedState(JFrame.NORMAL);
+                } else {
+                    setExtendedState(JFrame.MAXIMIZED_BOTH);
+                }
+                isMaximized = !isMaximized;
+            }
+        });
 
         minimizeButton = new JButton();
         minimizeButton.setBackground(new Color(50, 50, 47, 255));
@@ -90,6 +106,34 @@ public class CustomerView extends JFrame {
         topBar.setBackground(new Color(50, 50, 47, 255));
         topBar.add(TopButtons, BorderLayout.EAST);
         topBar.add(title);
+
+        
+        // Add mouse listener for dragging the frame
+                topBar.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        initialClick = e.getPoint();
+                        getComponentAt(initialClick);
+                    }
+                });
+
+        topBar.addMouseMotionListener(new MouseAdapter() {
+            @Override
+                public void mouseDragged(MouseEvent e) {
+                        // Get location of the window
+                        int thisX = getLocation().x;
+                        int thisY = getLocation().y;
+        
+                        // Determine how much the mouse moved since the initial click
+                        int xMoved = e.getX() - initialClick.x;
+                        int yMoved = e.getY() - initialClick.y;
+        
+                        // Move the frame by the mouse delta
+                        int newX = thisX + xMoved;
+                        int newY = thisY + yMoved;
+                        setLocation(newX, newY);
+                    }
+                });
         return topBar;
     }
 
@@ -182,7 +226,7 @@ public class CustomerView extends JFrame {
     private void showEventsArea() {
         JPanel eventsArea = new JPanel();
         eventsArea.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
-        eventsArea.setBorder(BorderFactory.createEmptyBorder(50, 10, 100, 10));
+        eventsArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         eventsArea.setBackground(new Color(221, 218, 238));
 
         List<Event> events = EventsController.allEvents();
@@ -334,14 +378,14 @@ public class CustomerView extends JFrame {
         eventCard.setLayout(new BoxLayout(eventCard, BoxLayout.Y_AXIS));
         eventCard.setBorder(BorderFactory.createEmptyBorder());
         eventCard.setBackground(new Color(221, 218, 238));
-        eventCard.setPreferredSize(new Dimension(400, 700)); // Adjust the size as needed
-        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,700)); // Set max height
+        eventCard.setPreferredSize(new Dimension(260, 410)); // Adjust the size as needed
+        eventCard.setMaximumSize(new Dimension(Integer.MAX_VALUE,400)); // Set max height
 
         // Image
         JLabel imageLabel = new JLabel();
         if (event.getImage() != null) {
             ImageIcon imageIcon = new ImageIcon(event.getImage());
-            Image image = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT);
+            Image image = imageIcon.getImage().getScaledInstance(390, 270, Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(image);
             imageLabel.setIcon(imageIcon);
         }
