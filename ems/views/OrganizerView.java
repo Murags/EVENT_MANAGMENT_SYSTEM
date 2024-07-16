@@ -5,8 +5,11 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +28,8 @@ public class OrganizerView extends JFrame {
     private JButton  eventsButton, bookingsButton, createEventButton, settingsButton, exitButton, minimizeButton, maximizeButton;
     private JPanel contentArea,TopButtons;
     private Organizer organizer;
+    private boolean isMaximized = false;//A boolean variable to initially set the size of the JFrame to normal size
+    private Point initialClick;//For moving the application using the mouse
 
     public OrganizerView(Organizer organizer) {
         this.organizer = organizer;
@@ -79,6 +84,17 @@ public class OrganizerView extends JFrame {
         maximizeButton.setIcon(icon1);
         maximizeButton.setFocusable(false);
         maximizeButton.setBorder(BorderFactory.createEmptyBorder());
+        maximizeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (isMaximized) {
+                    setExtendedState(JFrame.NORMAL);
+                } else {
+                    setExtendedState(JFrame.MAXIMIZED_BOTH);
+                }
+                isMaximized = !isMaximized;
+            }
+        });
 
         minimizeButton = new JButton();
         minimizeButton.setBackground(new Color(50, 50, 47, 255));
@@ -104,6 +120,34 @@ public class OrganizerView extends JFrame {
         topBar.setBackground(new Color(50, 50, 47, 255));
         topBar.add(TopButtons, BorderLayout.EAST);
 
+        // Add mouse listener for dragging the frame
+                topBar.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        initialClick = e.getPoint();
+                        getComponentAt(initialClick);
+                    }
+                });
+
+        topBar.addMouseMotionListener(new MouseAdapter() {
+            @Override
+                public void mouseDragged(MouseEvent e) {
+                        // Get location of the window
+                        int thisX = getLocation().x;
+                        int thisY = getLocation().y;
+        
+                        // Determine how much the mouse moved since the initial click
+                        int xMoved = e.getX() - initialClick.x;
+                        int yMoved = e.getY() - initialClick.y;
+        
+                        // Move the frame by the mouse delta
+                        int newX = thisX + xMoved;
+                        int newY = thisY + yMoved;
+                        setLocation(newX, newY);
+                    }
+                });
+        
+
         return topBar;
     }
 
@@ -113,14 +157,12 @@ public class OrganizerView extends JFrame {
         sidebar.setBackground(new Color(62,62,62,255));
         sidebar.setPreferredSize(new Dimension(200, getHeight()));
 
-       // dashboardButton = createSidebarButton("Dashboard");
         eventsButton = createSidebarButton("Events");
         bookingsButton = createSidebarButton("Bookings");
         createEventButton = createSidebarButton("Create Event");
         settingsButton = createSidebarButton("Settings");
 
-       //sidebar.add(Box.createVerticalStrut(20));
-       //sidebar.add(dashboardButton);
+      
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(eventsButton);
         sidebar.add(Box.createVerticalStrut(10));
@@ -180,9 +222,23 @@ public class OrganizerView extends JFrame {
     }
 
     private JPanel createEventsPanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Load and draw the background image
+                ImageIcon backgroundImage = new ImageIcon("img/bg.png");
+                // Adjust transparency
+            Graphics2D g2d = (Graphics2D) g.create();
+            float alpha = 0.1f; // 0.0f is fully transparent, 1.0f is fully opaque
+            g2d.setComposite(AlphaComposite.SrcOver.derive(alpha));
+            g2d.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+
+            g2d.dispose();
+            }
+        };
         panel.setLayout(new GridLayout(0, 3, 20, 20)); // 3 columns with 20px gaps
-        panel.setBorder(BorderFactory.createEmptyBorder(20,20, 20, 20));
+        panel.setBorder(BorderFactory.createEmptyBorder(20,10, 20, 20));
         panel.setBackground(new Color(221, 218, 238));
 
         List<Event> events = organizer.getEvents();
@@ -199,7 +255,21 @@ public class OrganizerView extends JFrame {
     }
 
     private JPanel createBookingsPanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Load and draw the background image
+                ImageIcon backgroundImage = new ImageIcon("img/bg.png");
+                // Adjust transparency
+            Graphics2D g2d = (Graphics2D) g.create();
+            float alpha = 0.1f; // 0.0f is fully transparent, 1.0f is fully opaque
+            g2d.setComposite(AlphaComposite.SrcOver.derive(alpha));
+            g2d.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+
+            g2d.dispose();
+            }
+        };
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Change to BoxLayout for vertical alignment
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.setBackground(new Color(240, 240, 240));
@@ -213,6 +283,7 @@ public class OrganizerView extends JFrame {
                 // Event Title
                 JLabel eventTitleLabel = new JLabel(event.getTitle());
                 eventTitleLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+                
                 eventTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 panel.add(eventTitleLabel);
                 panel.add(Box.createVerticalStrut(5));
@@ -220,7 +291,7 @@ public class OrganizerView extends JFrame {
                 List<Booking> bookings = event.allBookings();
                 if (bookings.isEmpty()) {
                     JLabel noBookingsLabel = new JLabel("No bookings for this event.");
-                    noBookingsLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
+                    noBookingsLabel.setFont(new Font("Verdana", Font.ITALIC, 14));
                     noBookingsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                     panel.add(noBookingsLabel);
                 } else {
@@ -246,15 +317,15 @@ public class OrganizerView extends JFrame {
 
         // Booking details
         JLabel attendeeNameLabel = new JLabel("Attendee: " + booking.attendeeName());
-        attendeeNameLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+        attendeeNameLabel.setFont(new Font("Verdana", Font.ITALIC, 12));
         attendeeNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel bookingDateLabel = new JLabel("Booking Date: " + booking.getBookingDate().toString());
-        bookingDateLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+        bookingDateLabel.setFont(new Font("Verdana", Font.ITALIC, 12));
         bookingDateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel priceLabel = new JLabel("Price: Ksh" + event.getPrice());
-        priceLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
+        priceLabel.setFont(new Font("Verdana", Font.ITALIC, 12));
         priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Add labels to the card
@@ -269,7 +340,21 @@ public class OrganizerView extends JFrame {
 
 
     private JPanel createSettingsPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout()){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Load and draw the background image
+                ImageIcon backgroundImage = new ImageIcon("img/bg.png");
+                // Adjust transparency
+            Graphics2D g2d = (Graphics2D) g.create();
+            float alpha = 0.1f; // 0.0f is fully transparent, 1.0f is fully opaque
+            g2d.setComposite(AlphaComposite.SrcOver.derive(alpha));
+            g2d.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+
+            g2d.dispose();
+            }
+        };
         panel.setBackground(new Color(240, 240, 240));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -277,6 +362,8 @@ public class OrganizerView extends JFrame {
 
         // Labels and text fields for organizer information
         JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setFont(new Font("Open Sans", Font.ITALIC, 20));
+        nameLabel.setForeground(new Color (7,106,171,255));
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(nameLabel, gbc);
@@ -286,6 +373,8 @@ public class OrganizerView extends JFrame {
         panel.add(nameField, gbc);
 
         JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setFont(new Font("Open Sans", Font.ITALIC, 20));
+        emailLabel.setForeground(new Color (7,106,171,255));
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(emailLabel, gbc);
@@ -295,6 +384,8 @@ public class OrganizerView extends JFrame {
         panel.add(emailField, gbc);
 
         JLabel passLabel = new JLabel("Password:");
+        passLabel.setFont(new Font("Open Sans", Font.ITALIC, 20));
+        passLabel.setForeground(new Color (7,106,171,255));
         gbc.gridx = 0;
         gbc.gridy = -1;
         panel.add(passLabel, gbc);
@@ -305,23 +396,27 @@ public class OrganizerView extends JFrame {
         // Add more fields if needed
         // Update button
         JButton updateButton = new JButton("Update");
+        updateButton.setFont(new Font("Calibri",Font.BOLD, 30));
         gbc.gridx = 0;
         gbc.gridy = -2;
         gbc.gridwidth = 1;
         updateButton.setMaximumSize(new Dimension(180, 40));
         updateButton.setFont(new Font("Verdana", Font.PLAIN, 16));
-        updateButton.setBackground(new Color(55, 55, 55));
-        updateButton.setForeground(Color.WHITE);
+        updateButton.setBackground(new Color (7,106,171,255));
+        updateButton.setForeground(Color.BLACK);
+        
         panel.add(updateButton, gbc);
 
         // Delete button
         JButton deleteButton = new JButton("Delete");
+        deleteButton.setFont(new Font("Open Sans", Font.ITALIC, 24));
+        deleteButton.setForeground(new Color (7,106,171,255));
         gbc.gridx = 1;
         gbc.gridy = -2;
         deleteButton.setMaximumSize(new Dimension(180, 40));
         deleteButton.setFont(new Font("Verdana", Font.PLAIN, 16));
-        deleteButton.setBackground(new Color(55, 55, 55));
-        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setBackground(new Color (7,106,171,255));
+        deleteButton.setForeground(Color.BLACK);
         panel.add(deleteButton, gbc);
 
         // Action listener for update button
