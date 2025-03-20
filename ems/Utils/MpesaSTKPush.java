@@ -13,10 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MpesaSTKPush {
 
-    private static final String CONSUMER_KEY = "RvkufEYOcO9uKqa5RSzGp2EA7i5CkzOAEeuDdugIIQqAd11A";
-    private static final String CONSUMER_SECRET = "2Lu4rL9UTWiSQxIk1BT51jYgriPVkMJ7gnKWZHvAY5N4tKyu3QGBvhEyyObh9LyJ";
+    private static final String CONSUMER_KEY = "YOUR_CONSUMER_KEY";
+    private static final String CONSUMER_SECRET = "YOUR_CONSUMER_SECRET";
     private static final String SHORTCODE = "174379";
-    private static final String PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+    private static final String PASSKEY = "";
     private static final String CALLBACK_URL = "https://sandbox.safaricom.co.ke/mpesa/";
 
 
@@ -58,7 +58,7 @@ public class MpesaSTKPush {
         payload.put("Timestamp", timestamp);
         payload.put("TransactionType", "CustomerPayBillOnline");
         payload.put("Amount", amount); // Amount to charge
-        payload.put("PartyA", "254708626805"); // Customer's phone number in international format
+        payload.put("PartyA", "25471234567"); // Customer's phone number in international format
         payload.put("PartyB", SHORTCODE);
         payload.put("PhoneNumber", phoneNumber); // Customer's phone number in international format
         payload.put("CallBackURL", CALLBACK_URL);
